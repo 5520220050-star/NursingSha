@@ -97,11 +97,19 @@
     var key = sid + "/" + sys + "/" + tid;
     if (pending[key]) { pending[key].push(cb); return; }
     pending[key] = [cb];
-    var s = document.createElement("script");
-    s.src = "data/" + key + ".js?v=" + (NS.version || "1");
-    function done() { var d = NS.data[sid] && NS.data[sid][sys] && NS.data[sid][sys][tid]; pending[key].forEach(function (f) { f(d || null); }); delete pending[key]; }
-    s.onload = done; s.onerror = done;
-    document.head.appendChild(s);
+    NS.img = NS.img || {}; NS.imgLoaded = NS.imgLoaded || {};
+    function topicScript() {
+      var s = document.createElement("script");
+      s.src = "data/" + key + ".js?v=" + (NS.version || "1");
+      function done() { var d = NS.data[sid] && NS.data[sid][sys] && NS.data[sid][sys][tid]; pending[key].forEach(function (f) { f(d || null); }); delete pending[key]; }
+      s.onload = done; s.onerror = done;
+      document.head.appendChild(s);
+    }
+    if (NS.imgLoaded[sid]) return topicScript();
+    var im = document.createElement("script");
+    im.src = "data/img/" + sid + ".js?v=" + (NS.version || "1");
+    im.onload = im.onerror = function () { NS.imgLoaded[sid] = 1; topicScript(); };
+    document.head.appendChild(im);
   }
 
   /* shared bits */
@@ -182,8 +190,14 @@
         return '<div class="col"><h4>' + fmt(c.h.en) + (c.h.ar ? '<span class="ar-h" lang="ar">' + esc(c.h.ar) + "</span>" : "") + '</h4><div class="in"><ul class="bl">' + c.en.map(function (x) { return "<li>" + fmt(x) + "</li>"; }).join("") + "</ul>" + (c.ar ? '<div class="ar" lang="ar" dir="rtl"><ul class="bl">' + c.ar.map(function (x) { return "<li>" + fmt(x) + "</li>"; }).join("") + "</ul></div>" : "") + "</div></div>";
       }).join("") + "</div>";
       case "svg": return '<figure class="blk fig">' + b.svg + (b.en ? "<figcaption>" + fmt(b.en) + (b.ar ? '<span class="ar" lang="ar" dir="rtl" style="text-align:center">' + esc(b.ar) + "</span>" : "") + "</figcaption>" : "") + "</figure>";
+      case "img": return photo(b);
       default: return "";
     }
+  }
+  function photo(b) {
+    var cap = (b.en ? fmt(b.en) : "") + (b.ar ? '<span class="ar" lang="ar" dir="rtl">' + esc(b.ar) + "</span>" : "");
+    var cr = '<span class="credit">Image: <a href="' + esc(b.u) + '" target="_blank" rel="noopener">' + esc(b.by || "Wikimedia Commons") + "</a>" + (b.lic ? " · " + esc(b.lic) : "") + ' · <a href="' + esc(b.u) + '" target="_blank" rel="noopener">source</a></span>';
+    return '<figure class="blk photo"><a class="ph-link" href="' + esc(b.full || b.src) + '" target="_blank" rel="noopener"><img loading="lazy" decoding="async" src="' + esc(b.src) + '"' + (b.w ? ' width="' + b.w + '" height="' + b.h + '"' : "") + ' alt="' + esc((b.en || "").replace(/\*\*/g, "")) + '" onerror="this.closest(\'figure\').style.display=\'none\'"></a><figcaption>' + cap + cr + "</figcaption></figure>";
   }
   function tbl(hd, rows) {
     return '<div class="tbl-wrap"><table' + (hd.length >= 3 ? ' class="wide"' : "") + "><thead><tr>" + hd.map(function (x) { return "<th>" + fmt(x) + "</th>"; }).join("") + "</tr></thead><tbody>" +
@@ -219,6 +233,7 @@
         (mode !== "quiz" ? '<button class="switch" id="arSwitch" type="button" aria-pressed="' + arOn + '"><i></i>Arabic · عربي</button>' : "") + '</div><div id="pane"></div>';
       $main.innerHTML = h;
       var pane = document.getElementById("pane");
+      d.key = sid + "/" + sysId + "/" + tid;
       if (mode === "quiz") quizSetup(pane, sid, sysId, tid, d);
       else {
         lecture(pane, d, url, sy, idx, base);
@@ -230,8 +245,13 @@
     var h = '<div class="article">';
     if (d.sections.length > 2) h += '<details class="toc"><summary>Contents · المحتويات (' + d.sections.length + ")</summary><ol>" + d.sections.map(function (sec, i) { return '<li><a href="javascript:void 0" data-jump="sec-' + i + '">' + esc(sec.h.en) + "</a></li>"; }).join("") + "</ol></details>";
     if (d.intro) h += '<div class="intro">' + fmt(d.intro.en) + arDiv(d.intro.ar) + "</div>";
+    var imgs = (NS.img && NS.img[d.key]) || [];
     d.sections.forEach(function (sec, i) {
-      h += '<section class="sec" id="sec-' + i + '"><div class="sec-head"><h2>' + fmt(sec.h.en) + (sec.h.ar ? '<span class="ar-h" lang="ar">' + esc(sec.h.ar) + "</span>" : "") + '</h2><button class="ar-toggle" type="button" aria-pressed="false" data-ar="sec-' + i + '">عربي</button></div>' + sec.b.map(rB).join("") + "</section>";
+      var blocks = sec.b.filter(function (b) { return !(imgs.length && b.t === "svg"); }).slice();
+      imgs.filter(function (m) { return m.s === i; }).forEach(function (m, k) {
+        var at = m.at == null ? 1 + k : m.at; blocks.splice(Math.min(at, blocks.length), 0, Object.assign({ t: "img" }, m));
+      });
+      h += '<section class="sec" id="sec-' + i + '"><div class="sec-head"><h2>' + fmt(sec.h.en) + (sec.h.ar ? '<span class="ar-h" lang="ar">' + esc(sec.h.ar) + "</span>" : "") + '</h2><button class="ar-toggle" type="button" aria-pressed="false" data-ar="sec-' + i + '">عربي</button></div>' + blocks.map(rB).join("") + "</section>";
     });
     h += '<div class="quizcta"><div><b>Test yourself on this topic</b><div class="a">' + d.questions.length + ' NCLEX-style questions · اختبر نفسك</div></div><a class="btn light" href="' + url + '/quiz">Start quiz</a></div>';
     var prev = sy.topics[idx - 1], next = sy.topics[idx + 1];

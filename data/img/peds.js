@@ -1,0 +1,1 @@
+NS.img = NS.img || {};

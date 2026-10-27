@@ -286,8 +286,8 @@ ol.cyc .ar { padding: 3px 8px; margin-top: 3px; }
 
 /* real photos with credit */
 .photo { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; overflow: hidden; margin: 16px 0; }
-.photo .ph-link { display: block; background: #0d1530; }
-.photo img { display: block; width: 100%; height: auto; max-height: 460px; object-fit: contain; margin: 0 auto; }
+.photo .ph-link { display: block; background: #fff; text-align: center; }
+.photo img { display: block; width: auto; max-width: 100%; height: auto; max-height: 520px; object-fit: contain; margin: 0 auto; }
 .photo figcaption { padding: 10px 14px 12px; font-size: 14px; color: var(--ink); line-height: 1.5; }
 .photo figcaption .ar { margin-top: 4px; color: var(--muted); }
 .photo .credit { display: block; margin-top: 6px; font-size: 12px; color: var(--muted); }

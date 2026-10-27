@@ -71,7 +71,7 @@ questions: [
 { q: "Oocysts of Toxoplasma are passed in the feces of:", o: ["Cats", "Dogs", "Humans", "Cattle"], a: 0, r: "Only felines shed oocysts." },
 { q: "How long do Toxoplasma oocysts need to sporulate and become infective in the environment?", o: ["1–5 days", "1 hour", "1 year", "They are immediately infective"], a: 0, r: "Daily litter changes reduce risk." },
 { q: "Which are routes of human Toxoplasma infection? (Select all that apply.)", o: ["Eating undercooked meat", "Ingesting oocysts from cat feces", "Transplacental", "Mosquito bite"], a: [0, 1, 2], s: true, r: "Toxoplasma is not vector-borne." },
-{ q: "Most toxoplasma infections in healthy adults are:", o: ["Asymptomatic", "Fatal", "Causing encephalitis", "Causing blindness always"], a: 0, r: "80–90% are asymptomatic." },
+{ q: "Most toxoplasma infections in healthy adults are:", o: ["Asymptomatic", "Fatal", "Causing encephalitis", "Causing blindness always"], a: 0, r: "About 80–90% of infections in immunocompetent people cause no symptoms." },
 { q: "The most common symptom of acquired toxoplasmosis in healthy adults is:", o: ["Painless cervical lymphadenopathy", "Severe diarrhea", "Jaundice", "Hematuria"], a: 0, r: "A mononucleosis-like illness may occur." },
 { q: "Congenital toxoplasmosis usually results from:", o: ["Primary maternal infection during pregnancy", "Maternal infection years before pregnancy", "Paternal infection", "Breastfeeding"], a: 0, r: "Prior immunity protects the fetus." },
 { q: "The classic triad of congenital toxoplasmosis is:", o: ["Hydrocephalus, intracranial calcifications, chorioretinitis", "Cataract, deafness, heart disease", "Rash, fever, arthritis", "Jaundice, anemia, diarrhea"], a: 0, r: "Cataract–deafness–heart disease is congenital rubella." },
@@ -88,11 +88,11 @@ questions: [
 { q: "If a pregnant woman must clean the litter box, she should:", o: ["Use gloves and change it daily", "Change it weekly", "Clean it with bare hands", "Let it accumulate"], a: 0, r: "Oocysts need 1–5 days to become infective." },
 { q: "Which antibody in the newborn indicates congenital infection because it does not cross the placenta?", o: ["IgM", "IgG", "IgE", "IgD"], a: 0, r: "Maternal IgG crosses the placenta." },
 { q: "Toxoplasma is described as an obligate intracellular parasite because it:", o: ["Must live inside host cells", "Lives freely in water", "Lives on skin", "Lives only in the gut lumen"], a: 0, r: "It multiplies within nucleated cells." },
-{ q: "The shape of the Toxoplasma tachyzoite is:", o: ["Crescent (banana)-shaped", "Pear-shaped with flagella", "Ring-shaped", "Spherical with cilia"], a: 0, r: "Toxon means bow/arc." },
+{ q: "The shape of the Toxoplasma tachyzoite is:", o: ["Crescent (banana)-shaped", "Pear-shaped with flagella", "Ring-shaped", "Spherical with cilia"], a: 0, r: "Tachyzoites are crescent-shaped; the name Toxoplasma comes from toxon, meaning bow or arc." },
 { q: "Which children may appear normal at birth but develop problems later from congenital toxoplasmosis?", o: ["Those who develop chorioretinitis and visual loss", "All infected children die at birth", "None", "Only those with cataract"], a: 0, r: "Ocular disease may appear years later." },
 { q: "Which patients are at greatest risk of severe toxoplasmosis? (Select all that apply.)", o: ["Patients with AIDS", "Organ transplant recipients", "Fetuses of women with primary infection", "Healthy adults with past infection"], a: [0, 1, 2], s: true, r: "Immunocompetent previously infected adults are protected." },
 { q: "Keeping pet cats indoors and feeding them commercial food reduces toxoplasmosis because:", o: ["Cats are less likely to become infected and shed oocysts", "It makes cats immune forever", "Commercial food contains drugs", "Indoor cats never defecate"], a: 0, r: "Cats acquire infection from prey or raw meat." },
 { q: "Which side effect of sulfadiazine requires good fluid intake?", o: ["Crystalluria", "Hypertension", "Constipation", "Hair loss"], a: 0, r: "Sulfonamides can crystallize in urine." },
-{ q: "The sexual cycle of Toxoplasma takes place in the:", o: ["Intestinal epithelium of cats", "Human brain", "Mosquito gut", "Sheep muscle"], a: 0, r: "This produces oocysts." }
+{ q: "The sexual cycle of Toxoplasma takes place in the:", o: ["Intestinal epithelium of cats", "Human brain", "Mosquito gut", "Sheep muscle"], a: 0, r: "The sexual cycle occurs only in cat intestinal epithelium and produces oocysts." }
 ]
 });

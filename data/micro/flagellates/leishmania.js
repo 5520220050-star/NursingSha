@@ -81,7 +81,7 @@ questions: [
 { q: "Which laboratory finding is typical of kala-azar?", o: ["Hypergammaglobulinemia", "High platelet count", "Polycythemia", "Low globulins"], a: 0, r: "Polyclonal B-cell activation raises globulins." },
 { q: "The traditional drugs of choice for leishmaniasis are:", o: ["Pentavalent antimonials", "Chloroquine", "Albendazole", "Praziquantel"], a: 0, r: "Sodium stibogluconate and meglumine antimoniate." },
 { q: "A patient receiving sodium stibogluconate should be monitored for:", o: ["ECG changes (QT prolongation)", "Hearing loss only", "Hair growth", "Hyperglycemia only"], a: 0, r: "Antimonials are cardiotoxic." },
-{ q: "Miltefosine for leishmaniasis requires contraception because it is:", o: ["Teratogenic", "A sedative", "An antibiotic", "A vaccine"], a: 0, r: "It causes fetal harm." },
+{ q: "Miltefosine for leishmaniasis requires contraception because it is:", o: ["Teratogenic", "A sedative", "An antibiotic", "A vaccine"], a: 0, r: "Miltefosine causes fetal harm, so pregnancy must be avoided during and after treatment." },
 { q: "Which measures prevent leishmaniasis? (Select all that apply.)", o: ["Insecticide spraying", "Fine-mesh or treated bed nets", "Repellents and protective clothing at dusk", "Controlling infected dogs and rodents", "Boiling drinking water"], a: [0, 1, 2, 3], s: true, r: "Leishmaniasis is not waterborne." },
 { q: "Sandflies usually bite at:", o: ["Dusk and night", "Noon", "Early morning only in winter", "Only indoors at noon"], a: 0, r: "Protection is needed in the evening." },
 { q: "In the sandfly gut, amastigotes transform into:", o: ["Promastigotes", "Trypomastigotes", "Cysts", "Sporozoites"], a: 0, r: "The flagellated form develops in the vector." },

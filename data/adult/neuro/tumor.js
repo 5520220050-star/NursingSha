@@ -1,0 +1,210 @@
+NS.reg("adult", "neuro", "tumor", {
+intro: {
+  en: "A **brain tumor** is an abnormal growth of cells inside the skull. Because the skull cannot expand, **even a benign tumor can kill** by raising intracranial pressure and compressing vital structures. Brain tumors cause problems in two ways: **general effects of raised ICP** (headache, vomiting, papilledema) and **focal effects** that depend on the part of the brain involved.",
+  ar: "**ورم الدماغ** نمو غير طبيعي للخلايا داخل الجمجمة. ولأن الجمجمة لا تتوسع، **فحتى الورم الحميد قد يقتل** برفع الضغط داخل القحف وضغط التراكيب الحيوية. تسبب الأورام مشاكل بطريقتين: **آثار عامة لارتفاع الضغط** (صداع، تقيؤ، وذمة الحليمة) و**آثار موضعية** حسب جزء الدماغ المصاب."
+},
+sections: [
+{ h: { en: "Classification", ar: "التصنيف" }, b: [
+  { t: "compare", cols: [
+    { h: { en: "Primary tumors", ar: "الأورام الأولية" }, en: ["Arise from brain cells, meninges, pituitary or nerves", "**Intracerebral (intra-axial)**: inside brain tissue — gliomas", "**Extracerebral (extra-axial)**: from coverings/supporting structures — meningioma, pituitary adenoma, acoustic neuroma", "Rarely spread outside the CNS"], ar: ["تنشأ من خلايا الدماغ أو السحايا أو النخامية أو الأعصاب", "**داخل الدماغ**: الأورام الدبقية", "**خارج الدماغ**: من الأغطية — الورم السحائي، النخامي، العصب السمعي", "نادراً ما تنتشر خارج الجهاز العصبي"] },
+    { h: { en: "Secondary (metastatic) tumors", ar: "الأورام الثانوية (النقائل)" }, en: ["Spread from cancer elsewhere — **lung** (most common), **breast**, kidney, colon, **melanoma**", "The **most common** brain tumors in adults overall", "Often **multiple** lesions at the gray–white matter junction"], ar: ["منتشرة من سرطان آخر — **الرئة** (الأشيع)، **الثدي**، الكلية، القولون، **الميلانوما**", "**أشيع** أورام الدماغ عند البالغين", "غالباً **متعددة**"] } ] },
+  { t: "p", en: "Tumors are also graded by the WHO from **grade 1 (slow-growing, well-differentiated)** to **grade 4 (rapidly growing, highly malignant)**. In the brain, \"benign\" describes the cells, not the outcome — location decides how dangerous a tumor is.",
+    ar: "تُصنف الأورام أيضاً حسب منظمة الصحة العالمية من **الدرجة 1 (بطيء النمو)** إلى **الدرجة 4 (سريع النمو شديد الخباثة)**. في الدماغ كلمة «حميد» تصف الخلايا لا النتيجة — الموقع هو الذي يحدد الخطورة." },
+  { t: "table", h: ["Tumor", "Key facts"], r: [
+    ["**Glioma — astrocytoma**", "Most common primary group; grades 1–4; infiltrates surrounding tissue so complete removal is difficult"],
+    ["**Glioblastoma (grade 4)**", "**Most common and most aggressive primary malignant brain tumor** in adults; rapid growth, poor prognosis"],
+    ["**Oligodendroglioma**", "Slow-growing glioma; seizures common; calcification"],
+    ["**Ependymoma**", "Lines the ventricles; may cause **hydrocephalus**; common in children"],
+    ["**Meningioma**", "From the meninges; usually **benign and slow-growing**; more in women; often curable by surgery"],
+    ["**Pituitary adenoma**", "Benign; **hormone excess** (prolactin, GH, ACTH) and/or **bitemporal hemianopia** from pressure on the optic chiasm"],
+    ["**Acoustic neuroma (vestibular schwannoma)**", "Benign tumor of CN VIII: **unilateral hearing loss, tinnitus, vertigo**; may press on CN V and VII"],
+    ["**Medulloblastoma**", "Malignant cerebellar tumor of **children**; ataxia, hydrocephalus"],
+    ["**Primary CNS lymphoma**", "Associated with **immunosuppression** (HIV, transplant)"]],
+    ar: { h: ["الورم", "معلومات أساسية"], r: [
+    ["**الورم النجمي (دبقي)**", "أشيع مجموعة أولية، درجات 1–4، يتغلغل فيصعب استئصاله كاملاً"],
+    ["**الورم الأرومي الدبقي (درجة 4)**", "**أشيع وأشرس ورم دماغي أولي خبيث** عند البالغين، إنذاره سيء"],
+    ["**الورم الدبقي قليل التغصن**", "بطيء النمو، نوبات شائعة"],
+    ["**الورم البطاني العصبي**", "يبطن البطينات وقد يسبب **استسقاء الرأس**، شائع عند الأطفال"],
+    ["**الورم السحائي**", "من السحايا، غالباً **حميد بطيء**، أكثر عند النساء، يُشفى غالباً بالجراحة"],
+    ["**الورم النخامي**", "حميد، **زيادة هرمونات** و/أو **فقدان الرؤية الصدغية في العينين**"],
+    ["**ورم العصب السمعي**", "حميد في العصب الثامن: **ضعف سمع من جهة واحدة، طنين، دوار**"],
+    ["**الورم الأرومي النخاعي**", "ورم مخيخي خبيث عند **الأطفال**"],
+    ["**لمفوما الجهاز العصبي**", "مرتبط **بضعف المناعة**"]] } },
+  { t: "p", en: "**Risk factors** are few: previous **ionizing radiation** to the head, certain genetic syndromes (neurofibromatosis, tuberous sclerosis), immunosuppression (lymphoma) and age. For metastatic tumors, the risk factors are those of the primary cancer (e.g., **smoking** for lung cancer).",
+    ar: "**عوامل الخطورة** قليلة: **الإشعاع المؤين** السابق على الرأس، متلازمات وراثية (الورم الليفي العصبي)، ضعف المناعة والعمر. وللأورام الثانوية عوامل خطر السرطان الأصلي (مثل **التدخين** لسرطان الرئة)." }
+]},
+{ h: { en: "Pathophysiology", ar: "الفيزيولوجيا المرضية" }, b: [
+  { t: "flow", steps: [
+    { en: "Tumor grows and **occupies space** in the rigid skull", ar: "الورم ينمو و**يشغل حيزاً** في الجمجمة الصلبة" },
+    { en: "**Vasogenic edema** develops around it (leaky blood–brain barrier)", ar: "تتكون **وذمة وعائية** حوله" },
+    { en: "It may **block CSF flow** → hydrocephalus", ar: "قد **يسد جريان السائل الدماغي** ← استسقاء" },
+    { en: "**↑ ICP** + **local compression/invasion** of brain tissue and cranial nerves", ar: "**ارتفاع الضغط** + **ضغط أو غزو موضعي** للنسيج والأعصاب" },
+    { en: "Without treatment → shift of brain structures → **herniation**", ar: "بدون علاج ← إزاحة ← **انفتاق**" } ] }
+]},
+{ h: { en: "Clinical manifestations", ar: "المظاهر السريرية" }, b: [
+  { t: "mnem", k: "HVP", title: "Classic triad of raised ICP from a tumor", rows: [
+    ["H", "**Headache** — often worse in the early morning, on waking, with coughing, straining or bending; may improve after vomiting", "صداع يشتد صباحاً وعند الاستيقاظ ومع السعال والانحناء"],
+    ["V", "**Vomiting** — may be **projectile**, often **without nausea**, especially in the morning", "تقيؤ قد يكون **قذفياً بدون غثيان** خاصة صباحاً"],
+    ["P", "**Papilledema** — swelling of the optic disc; blurred vision, visual obscurations", "**وذمة حليمة العصب البصري** وتشوش الرؤية"] ] },
+  { t: "list", en: [
+    "**Seizures** — often the first sign of a slow-growing tumor; new seizures in an adult need brain imaging",
+    "**Cognitive and personality changes**, drowsiness, mental slowing",
+    "**Focal deficits** depending on location (table below)"],
+    ar: [
+    "**النوبات** — غالباً أول علامة للورم البطيء؛ النوبة الجديدة عند البالغ تحتاج تصويراً للدماغ",
+    "**تغيرات معرفية وشخصية**، نعاس، بطء التفكير",
+    "**عجز موضعي** حسب الموقع (الجدول)"] },
+  { t: "table", h: ["Location", "Localized manifestations"], r: [
+    ["**Frontal lobe**", "Personality and behavior change, loss of inhibition, poor judgment, apathy; contralateral hemiparesis; **expressive aphasia** (dominant side); urinary incontinence"],
+    ["**Parietal lobe**", "Sensory loss on the opposite side, **neglect**, spatial disorientation, inability to recognize objects by touch"],
+    ["**Temporal lobe**", "**Seizures** (with smell or taste aura, déjà vu), **auditory/olfactory hallucinations**, memory loss, **receptive aphasia**"],
+    ["**Occipital lobe**", "**Visual field defects** (homonymous hemianopia), visual hallucinations"],
+    ["**Cerebellum**", "**Ataxia**, incoordination, nystagmus, dizziness, early **hydrocephalus** (blocks 4th ventricle)"],
+    ["**Brainstem**", "Cranial nerve palsies (diplopia, facial weakness, **dysphagia**), hemiparesis, vital sign changes"],
+    ["**Pituitary/sellar region**", "**Bitemporal hemianopia**; hormonal syndromes: **prolactinoma** (amenorrhea, galactorrhea, infertility, impotence), **acromegaly** (GH), **Cushing's disease** (ACTH)"],
+    ["**Cerebellopontine angle (acoustic neuroma)**", "Unilateral sensorineural hearing loss, tinnitus, vertigo, facial numbness/weakness"]],
+    ar: { h: ["الموقع", "المظاهر الموضعية"], r: [
+    ["**الفص الجبهي**", "تغير الشخصية والسلوك، فقدان الكوابح، ضعف الحكم، خزل مقابل، **حبسة تعبيرية**، سلس بولي"],
+    ["**الفص الجداري**", "فقدان الإحساس المقابل، **إهمال جهة**، اضطراب الإدراك المكاني"],
+    ["**الفص الصدغي**", "**نوبات** مع أورة شم أو ذوق، **هلاوس سمعية أو شمية**، فقدان الذاكرة، **حبسة استقبالية**"],
+    ["**الفص القذالي**", "**عيوب المجال البصري**، هلاوس بصرية"],
+    ["**المخيخ**", "**ترنح**، عدم تناسق، رأرأة، دوخة، **استسقاء** مبكر"],
+    ["**جذع الدماغ**", "شلل الأعصاب القحفية (ازدواج الرؤية، ضعف الوجه، **عسر البلع**)، خزل، تغير العلامات الحيوية"],
+    ["**الغدة النخامية**", "**فقدان الرؤية الصدغية للعينين**، متلازمات هرمونية: **ورم البرولاكتين** (انقطاع الطمث وإدرار الحليب)، **ضخامة الأطراف**، **داء كوشينغ**"],
+    ["**الزاوية المخيخية الجسرية**", "ضعف سمع من جهة واحدة، طنين، دوار، خدر أو ضعف الوجه"]] } }
+]},
+{ h: { en: "Diagnostic evaluation", ar: "التشخيص" }, b: [
+  { t: "list", en: [
+    "**MRI with gadolinium** — the best test: location, size, edema, involvement of structures",
+    "**CT scan** — quick, shows mass, bleeding, calcification, hydrocephalus",
+    "**Biopsy** (stereotactic or at surgery) — confirms the **type and grade**",
+    "**PET / MR spectroscopy** — distinguishes tumor from radiation necrosis; metabolic activity",
+    "**Neurological exam, visual field testing, audiometry** (acoustic neuroma), **endocrine tests** (pituitary)",
+    "**EEG** for seizures; **chest CT / full staging** to find a primary cancer if metastasis is suspected",
+    "**Lumbar puncture** is avoided when ICP is raised (risk of herniation)"],
+    ar: [
+    "**الرنين مع الغادولينيوم** — الأفضل: الموقع والحجم والوذمة",
+    "**المفراس** — سريع ويُظهر الكتلة والنزف والتكلس والاستسقاء",
+    "**الخزعة** — تؤكد **النوع والدرجة**",
+    "**التصوير البوزيتروني** — يميز الورم من النخر الإشعاعي",
+    "**الفحص العصبي، المجال البصري، السمع، الهرمونات**",
+    "**تخطيط الدماغ** للنوبات و**تصوير الصدر** للبحث عن ورم أصلي",
+    "**البزل القطني** يُتجنب مع ارتفاع الضغط"] }
+]},
+{ h: { en: "Medical and surgical management", ar: "العلاج الطبي والجراحي" }, b: [
+  { t: "table", h: ["Treatment", "Details and nursing points"], r: [
+    ["**Surgery — craniotomy**", "Removes as much tumor as safely possible (curative for many meningiomas); also relieves ICP and gives tissue diagnosis"],
+    ["**Transsphenoidal surgery**", "Pituitary tumors approached **through the nose/sphenoid sinus** — no visible incision"],
+    ["**Stereotactic biopsy / surgery**", "Computer-guided; for deep or small lesions"],
+    ["**Radiation therapy**", "External beam after surgery or for inoperable tumors; **stereotactic radiosurgery (e.g., Gamma Knife)** delivers a single high dose to a small target. Side effects: fatigue, **alopecia**, scalp erythema, cerebral edema, later cognitive changes"],
+    ["**Chemotherapy**", "**Temozolomide** (oral, glioblastoma) — myelosuppression, nausea; carmustine wafers placed in the cavity; the **blood–brain barrier** limits many drugs"],
+    ["**Corticosteroids (dexamethasone)**", "Reduce **vasogenic edema** quickly; monitor **glucose**, GI bleeding (give acid-suppressing drug), infection, mood, fluid retention; **taper — never stop abruptly**"],
+    ["**Anticonvulsants** (e.g., levetiracetam)", "Prevent/treat seizures; seizure precautions"],
+    ["**Targeted therapy**", "e.g., bevacizumab for recurrent glioblastoma"],
+    ["**Other**", "VP shunt for hydrocephalus; **hormone replacement** after pituitary surgery; **dopamine agonists** (bromocriptine, cabergoline) shrink prolactinomas; palliative care"]],
+    ar: { h: ["العلاج", "التفاصيل والنقاط التمريضية"], r: [
+    ["**الجراحة — فتح الجمجمة**", "استئصال أكبر قدر آمن (شافٍ لكثير من الأورام السحائية) وتخفيف الضغط وأخذ عينة"],
+    ["**الجراحة عبر الوتدي (الأنف)**", "لأورام النخامية **عبر الأنف** بدون شق ظاهر"],
+    ["**الخزعة والجراحة المجسمة**", "موجهة بالحاسوب للآفات العميقة"],
+    ["**العلاج الإشعاعي**", "بعد الجراحة أو للأورام غير القابلة للاستئصال، و**الجراحة الإشعاعية (السكين الغامّا)**؛ الآثار: تعب، **تساقط الشعر**، احمرار فروة الرأس، وذمة"],
+    ["**العلاج الكيمياوي**", "**تيموزولومايد** فموي — تثبيط النخاع والغثيان؛ **الحاجز الدموي الدماغي** يحد من الأدوية"],
+    ["**الكورتيزون (ديكساميثازون)**", "يقلل **الوذمة الوعائية** بسرعة؛ مراقبة **السكر** ونزف المعدة والعدوى؛ **يُسحب تدريجياً ولا يُوقف فجأة**"],
+    ["**مضادات الاختلاج**", "للوقاية من النوبات وعلاجها"],
+    ["**العلاج الموجه**", "مثل بيفاسيزوماب"],
+    ["**أخرى**", "تحويلة للاستسقاء، **تعويض الهرمونات** بعد جراحة النخامية، **ناهضات الدوبامين** لورم البرولاكتين، الرعاية التلطيفية"]] } }
+]},
+{ h: { en: "Nursing care: craniotomy", ar: "الرعاية التمريضية: فتح الجمجمة" }, b: [
+  { t: "compare", cols: [
+    { h: { en: "Before surgery", ar: "قبل العملية" }, en: [
+      "**Baseline neurological assessment** for comparison after surgery",
+      "Explain the procedure and expected appearance (head dressing, facial/periorbital swelling)",
+      "Give dexamethasone, anticonvulsants and prophylactic antibiotics as ordered",
+      "Consent, NPO, labs (CBC, **coagulation**, cross-match), hair preparation per policy",
+      "Emotional support: fear of disability, death, change in personality"],
+      ar: ["**تقييم عصبي أساسي** للمقارنة", "شرح العملية والمظهر المتوقع (ضماد، تورم حول العين)", "الكورتيزون ومضادات الاختلاج والمضاد الحيوي حسب الطلب", "الموافقة والصيام والتحاليل (التخثر ومطابقة الدم) وتحضير الشعر", "الدعم النفسي"] },
+    { h: { en: "After surgery", ar: "بعد العملية" }, en: [
+      "**Airway, oxygenation**, neuro checks (GCS, pupils, limbs) and vital signs frequently",
+      "**Supratentorial**: HOB **30°**; **infratentorial**: flat or slightly raised, side-lying as ordered, **avoid neck flexion**",
+      "Check dressing for bleeding and **clear drainage (CSF)**; drains patent",
+      "Monitor for **↑ICP, hemorrhage, seizures, infection, CSF leak**, fluid–electrolyte problems (**DI, SIADH**), **hyperglycemia** (steroids), **DVT**",
+      "Periorbital edema: cool compresses, eye care",
+      "Pain control with drugs that don't mask neuro signs; early mobilization; physiotherapy, speech therapy"],
+      ar: ["**مجرى الهواء والأكسجين** والمراقبة العصبية والعلامات الحيوية بشكل متكرر", "**فوق الخيمة**: رفع الرأس **30**؛ **تحت الخيمة**: مستوٍ أو مرفوع قليلاً وعلى الجانب حسب الطلب و**تجنب ثني الرقبة**", "فحص الضماد للنزف و**السائل الصافي**", "مراقبة **ارتفاع الضغط والنزف والنوبات والعدوى والتسرب**، **السكري الكاذب وSIADH**، **ارتفاع السكر**، **الخثار**", "تورم حول العين: كمادات باردة", "تسكين الألم والحركة المبكرة والعلاج الطبيعي"] } ] },
+  { t: "h3", en: "After transsphenoidal pituitary surgery", ar: "بعد جراحة النخامية عبر الأنف" },
+  { t: "list", en: [
+    "HOB elevated about 30°; **nasal packing** and a mustache dressing — mouth breathing, frequent **oral care** (rinses; avoid toothbrushing over the incision above the front teeth for about 10 days)",
+    "**Do not blow the nose, sneeze (if must — open mouth), cough, use straws or bend forward** — these increase pressure and risk CSF leak",
+    "Watch for **CSF rhinorrhea**: clear nasal drainage or constant swallowing; test for **glucose**; report persistent **headache**",
+    "Monitor **urine output and specific gravity** — **diabetes insipidus** is common after pituitary surgery",
+    "Teach lifelong **hormone replacement** if needed (cortisol, thyroid hormone, ADH)"],
+    ar: [
+    "رفع الرأس 30 درجة؛ **حشوة أنفية** — التنفس من الفم و**عناية فموية** متكررة (غسول، وتجنب تفريش منطقة الشق فوق الأسنان الأمامية لمدة 10 أيام تقريباً)",
+    "**ممنوع تمخيط الأنف، العطاس (وإن اضطر فبفم مفتوح)، السعال، الشفاطة، والانحناء للأمام**",
+    "مراقبة **تسرب السائل الدماغي من الأنف**: سائل صافٍ أو بلع متكرر؛ فحص **الجلوكوز**؛ الإبلاغ عن الصداع المستمر",
+    "مراقبة **البول وكثافته** — **السكري الكاذب** شائع بعد جراحة النخامية",
+    "تعليم **تعويض الهرمونات** مدى الحياة عند الحاجة"] },
+  { t: "table", h: ["Nursing diagnosis", "Interventions"], r: [
+    ["**Risk for ineffective cerebral tissue perfusion** r/t edema, ↑ICP", "Neuro checks, ICP precautions, steroids as ordered"],
+    ["**Risk for injury** r/t seizures, motor/sensory deficits, confusion", "Seizure precautions, bed low, call bell, assist with walking, orientation"],
+    ["**Acute pain** (headache)", "Analgesics, cool compresses, quiet environment"],
+    ["**Disturbed sensory perception** (visual field loss, hearing loss)", "Approach from the unaffected side; teach scanning; arrange room for safety"],
+    ["**Self-care deficit**", "Assist with ADLs, occupational therapy, encourage independence"],
+    ["**Imbalanced nutrition** r/t nausea, chemo, dysphagia", "Antiemetics, small frequent meals, swallow assessment, dietitian"],
+    ["**Disturbed body image** (alopecia, scars, steroid face)", "Prepare for hair loss; head covering; encourage expression of feelings"],
+    ["**Anticipatory grieving / caregiver role strain**", "Honest information, family involvement, palliative and spiritual care, support resources"]],
+    ar: { h: ["التشخيص التمريضي", "التدخلات"], r: [
+    ["**خطر نقص التروية الدماغية**", "مراقبة عصبية واحتياطات الضغط والكورتيزون"],
+    ["**خطر الإصابة**", "احتياطات النوبات، سرير منخفض، جرس قريب، المساعدة بالمشي"],
+    ["**ألم حاد** (صداع)", "مسكنات، كمادات باردة، بيئة هادئة"],
+    ["**اضطراب الإدراك الحسي**", "الاقتراب من الجهة السليمة وتعليم مسح المكان"],
+    ["**عجز الرعاية الذاتية**", "المساعدة في الأنشطة والعلاج الوظيفي"],
+    ["**اختلال التغذية**", "مضادات التقيؤ، وجبات صغيرة متكررة، تقييم البلع"],
+    ["**اضطراب صورة الجسد** (تساقط الشعر)", "التهيئة لتساقط الشعر وتغطية الرأس والتعبير عن المشاعر"],
+    ["**الحزن الاستباقي / إجهاد مقدم الرعاية**", "معلومات صادقة، إشراك العائلة، الرعاية التلطيفية والروحية"]] } },
+  { t: "tip", en: "For **radiation to the head**: wash the scalp gently with mild shampoo, pat dry, **avoid hair dryers, dyes, perms and sun exposure** to the area, wear a soft head cover, and don't remove skin markings.",
+    ar: "مع **الإشعاع على الرأس**: غسل فروة الرأس بلطف بشامبو خفيف والتجفيف بالتربيت، **تجنب مجفف الشعر والصبغة والشمس**، غطاء رأس ناعم، وعدم إزالة علامات الإشعاع." }
+]}
+],
+questions: [
+{ q: "Which is the most common type of brain tumor in adults overall?", o: ["Meningioma", "Metastatic (secondary) tumor", "Acoustic neuroma", "Medulloblastoma"], a: 1, r: "Brain metastases, most often from lung and breast cancer, outnumber primary brain tumors in adults." },
+{ q: "Which is the most common and most aggressive primary malignant brain tumor in adults?", o: ["Meningioma", "Glioblastoma", "Pituitary adenoma", "Ependymoma"], a: 1, r: "Glioblastoma (grade 4 astrocytoma) is the most common malignant primary brain tumor and grows rapidly with poor prognosis." },
+{ q: "A family asks how a 'benign' meningioma can be dangerous. The best explanation is:", o: ["It spreads to the liver", "It occupies space in the rigid skull and can raise ICP and compress brain tissue", "It always becomes malignant", "It is never dangerous"], a: 1, r: "In the brain, location and mass effect determine danger; a benign tumor can increase ICP and damage vital structures." },
+{ q: "Which triad suggests increased ICP from a brain tumor?", o: ["Fever, rash, diarrhea", "Headache, vomiting, papilledema", "Polyuria, polydipsia, polyphagia", "Chest pain, dyspnea, cough"], a: 1, r: "Headache, vomiting and papilledema are the classic signs of raised ICP." },
+{ q: "The headache of a brain tumor is typically:", o: ["Worse in the evening and relieved by lying down", "Worse on waking in the morning and with coughing or straining", "Only present after meals", "Always relieved completely by paracetamol"], a: 1, r: "ICP rises during sleep (CO₂ retention, recumbency), so tumor headaches are often worse in the morning and with Valsalva." },
+{ q: "A 45-year-old with no history of epilepsy has a first generalized seizure. The nurse anticipates:", o: ["Discharge without tests", "Brain imaging (CT or MRI) to look for a lesion such as a tumor", "Psychiatric referral only", "Lumbar puncture first in all cases"], a: 1, r: "New-onset seizures in adults require neuroimaging; a tumor is an important cause." },
+{ q: "A patient's family reports he has become rude, impulsive and careless about hygiene. The tumor is most likely in the:", o: ["Occipital lobe", "Frontal lobe", "Cerebellum", "Brainstem"], a: 1, r: "The frontal lobe controls personality, judgment and social behavior." },
+{ q: "A patient has seizures preceded by an unpleasant smell and episodes of hearing voices. Which lobe is involved?", o: ["Temporal", "Frontal", "Occipital", "Parietal"], a: 0, r: "Temporal lobe lesions cause seizures with olfactory auras, auditory hallucinations and memory changes." },
+{ q: "Ataxia, nystagmus and early hydrocephalus suggest a tumor in the:", o: ["Frontal lobe", "Cerebellum", "Parietal lobe", "Pituitary"], a: 1, r: "Cerebellar tumors impair coordination and can block the fourth ventricle, causing hydrocephalus." },
+{ q: "A woman has amenorrhea, galactorrhea and loss of peripheral vision in both temporal fields. The likely diagnosis is:", o: ["Acoustic neuroma", "Prolactin-secreting pituitary adenoma", "Glioblastoma", "Meningioma of the occipital lobe"], a: 1, r: "A prolactinoma causes hormonal symptoms and can compress the optic chiasm, producing bitemporal hemianopia." },
+{ q: "A patient has unilateral hearing loss, tinnitus and vertigo. Which tumor is suspected?", o: ["Acoustic neuroma", "Pituitary adenoma", "Frontal glioma", "Medulloblastoma"], a: 0, r: "Acoustic neuroma (vestibular schwannoma) arises from cranial nerve VIII." },
+{ q: "Which test is best for diagnosing and localizing a brain tumor?", o: ["Skull X-ray", "MRI with gadolinium contrast", "EEG", "Lumbar puncture"], a: 1, r: "Contrast MRI gives the most detailed images of tumor location, size and edema; biopsy confirms the type." },
+{ q: "Which procedure confirms the type and grade of a brain tumor?", o: ["CT scan", "Biopsy", "Blood test", "EEG"], a: 1, r: "Histological examination of tissue obtained by stereotactic or surgical biopsy determines type and grade." },
+{ q: "A patient with a brain tumor is taking dexamethasone. Which instructions are correct? (Select all that apply.)", o: ["Monitor blood glucose", "Take with food or as prescribed with an acid-reducing drug", "Do not stop the drug suddenly", "Expect the drug to kill tumor cells", "Report signs of infection"], a: [0, 1, 2, 4], s: true, r: "Steroids cause hyperglycemia, GI irritation and immunosuppression; they must be tapered. They reduce edema but do not destroy the tumor." },
+{ q: "What is the main purpose of dexamethasone in brain tumors?", o: ["Prevent seizures", "Reduce vasogenic cerebral edema", "Treat infection", "Increase appetite"], a: 1, r: "Dexamethasone reduces edema around the tumor, lowering ICP and improving symptoms quickly." },
+{ q: "Why are many chemotherapy drugs less effective for brain tumors?", o: ["They are too cheap", "The blood–brain barrier limits their entry into the brain", "Brain tumors do not divide", "They cause hypoglycemia"], a: 1, r: "The blood–brain barrier blocks many drugs; agents such as temozolomide and nitrosoureas cross it." },
+{ q: "Which oral chemotherapy is commonly used for glioblastoma?", o: ["Temozolomide", "Metformin", "Warfarin", "Methotrexate cream"], a: 0, r: "Temozolomide is an oral alkylating agent used with radiation for glioblastoma; it can cause myelosuppression." },
+{ q: "After a supratentorial craniotomy, how is the patient usually positioned?", o: ["Flat", "Head of bed elevated about 30°", "Trendelenburg", "Prone"], a: 1, r: "Elevating the head promotes venous drainage and reduces ICP after supratentorial surgery." },
+{ q: "After an infratentorial (posterior fossa) craniotomy, the nurse should:", o: ["Flex the neck to promote drainage", "Keep the patient flat or slightly elevated, side-lying as ordered, avoiding neck flexion", "Elevate the head to 90° immediately", "Place in Trendelenburg"], a: 1, r: "Posterior fossa surgery requires careful positioning to protect the incision and brainstem; neck flexion is avoided." },
+{ q: "On the first day after craniotomy, the dressing is soaked with clear fluid. The nurse should:", o: ["Reinforce and ignore", "Assess for CSF (halo sign, glucose) and notify the surgeon", "Remove all dressings", "Apply firm packing into the wound"], a: 1, r: "Clear drainage may be CSF, indicating a dural leak with high meningitis risk; it must be reported." },
+{ q: "After transsphenoidal hypophysectomy, which statement indicates the patient needs more teaching?", o: ["\"I won't blow my nose.\"", "\"I'll bend over to pick up things from the floor.\"", "\"I'll use mouth rinses instead of brushing near the incision.\"", "\"I'll report clear nasal drainage.\""], a: 1, r: "Bending forward raises ICP and stresses the surgical site, risking a CSF leak." },
+{ q: "After transsphenoidal surgery, a patient reports frequent swallowing and a salty taste with clear nasal dripping. The nurse suspects:", o: ["Normal mucus", "CSF leak", "Sinus infection", "Allergic rhinitis"], a: 1, r: "Postnasal CSF drainage is felt as frequent swallowing and salty taste; it tests positive for glucose and must be reported." },
+{ q: "A patient after pituitary surgery has urine output of 6 L/day and specific gravity 1.001. Which condition and treatment are likely?", o: ["SIADH — fluid restriction", "Diabetes insipidus — desmopressin", "Renal failure — dialysis", "Hyperglycemia — insulin"], a: 1, r: "Damage to the posterior pituitary or stalk reduces ADH, causing DI; desmopressin replaces ADH." },
+{ q: "Which complications should the nurse monitor for after craniotomy? (Select all that apply.)", o: ["Increased ICP", "Seizures", "Hemorrhage", "CSF leak and meningitis", "Hypoglycemia from dexamethasone"], a: [0, 1, 2, 3], s: true, r: "ICP rise, seizures, bleeding and CSF leak/infection are key complications; steroids cause hyperglycemia, not hypoglycemia." },
+{ q: "Two days after craniotomy, the patient's eyelids are swollen and bruised. What is the appropriate action?", o: ["Report as an emergency", "Apply cool compresses and explain this is common", "Apply heat", "Restrict fluids"], a: 1, r: "Periorbital edema and ecchymosis are common after craniotomy; cool compresses reduce swelling." },
+{ q: "A patient receiving cranial radiation asks about hair care. The nurse advises:", o: ["Use a hot hair dryer daily", "Wash gently with mild shampoo, pat dry and avoid dyes and sun", "Dye the hair to hide thinning", "Scrub the scalp vigorously"], a: 1, r: "Irradiated skin is fragile; gentle care and sun protection prevent damage. Alopecia is expected." },
+{ q: "A patient with a left temporal tumor has a right homonymous visual field defect. How should the nurse arrange the room?", o: ["Place items on the side of the visual defect only", "Approach from the unaffected side and teach the patient to turn the head to scan", "Keep the room dark", "Remove the call bell"], a: 1, r: "Approaching from the intact field and teaching scanning compensates for lost vision and promotes safety." },
+{ q: "Which nursing diagnosis is a priority immediately after craniotomy?", o: ["Disturbed body image", "Risk for ineffective cerebral tissue perfusion", "Deficient knowledge about chemotherapy", "Social isolation"], a: 1, p: true, r: "In the immediate postoperative period, threats to cerebral perfusion (edema, bleeding, ICP) are the priority." },
+{ q: "A patient on temozolomide should have which laboratory test monitored regularly?", o: ["Complete blood count", "Serum amylase", "Urine culture", "Thyroid antibodies"], a: 0, r: "Temozolomide causes myelosuppression (low WBC and platelets), so CBC is monitored." },
+{ q: "Which statement about stereotactic radiosurgery (Gamma Knife) is correct?", o: ["It requires a large incision", "It delivers a precise high dose of radiation to a small target without an open operation", "It removes the tumor with a scalpel", "It is a type of chemotherapy"], a: 1, r: "Stereotactic radiosurgery focuses many beams on a small lesion, sparing surrounding tissue, with no incision." },
+{ q: "The family of a patient with recurrent glioblastoma asks whether he will get better. The most appropriate nursing response is:", o: ["\"Don't worry, he will recover completely.\"", "\"Tell me what the doctors have explained to you, and what worries you most.\"", "\"I can't talk about that.\"", "\"Nothing more can be done.\""], a: 1, r: "Exploring the family's understanding and concerns is therapeutic and allows accurate information and support, including palliative care." },
+{ q: "Which medication is used to shrink a prolactin-secreting pituitary adenoma?", o: ["Cabergoline or bromocriptine (dopamine agonists)", "Insulin", "Furosemide", "Heparin"], a: 0, r: "Dopamine inhibits prolactin; dopamine agonists reduce prolactin levels and tumor size." },
+{ q: "Which risk factor is established for primary brain tumors?", o: ["Previous ionizing radiation to the head", "Drinking coffee", "Using mobile phones (proven)", "Eating spicy food"], a: 0, r: "Prior cranial radiation and certain genetic syndromes are established risk factors." },
+{ q: "A patient with a brainstem tumor coughs while drinking water. The priority nursing diagnosis is:", o: ["Risk for aspiration", "Activity intolerance", "Deficient knowledge", "Anxiety"], a: 0, r: "Brainstem involvement can impair cranial nerves IX and X, causing dysphagia and aspiration risk." },
+{ q: "Before craniotomy, why is a baseline neurological assessment recorded?", o: ["For billing", "To compare with postoperative findings and detect deterioration", "It is not necessary", "To decide the anesthetic only"], a: 1, r: "Comparison with baseline allows early recognition of new deficits after surgery." },
+{ q: "Which statements about vomiting caused by a brain tumor are correct? (Select all that apply.)", o: ["It may be projectile", "It often occurs without nausea", "It is often worse in the morning", "It is always caused by food", "It reflects raised ICP"], a: [0, 1, 2, 4], s: true, r: "Vomiting from raised ICP is often projectile, morning-predominant and without preceding nausea." },
+{ q: "A patient with brain metastases from lung cancer asks why he had headaches before a lung problem was found. The nurse explains:", o: ["Brain metastases can be the first sign of a hidden primary cancer", "Lung cancer never spreads to the brain", "Headaches are unrelated", "Smoking causes headaches only"], a: 0, r: "Brain metastases sometimes present before the primary tumor is diagnosed, especially with lung cancer." },
+{ q: "Which teaching is correct for a patient discharged on levetiracetam after tumor surgery?", o: ["Stop the drug once the wound heals", "Take it regularly, do not stop suddenly, and avoid driving until cleared", "Take it only if a seizure occurs", "Double the dose before bedtime"], a: 1, r: "Anticonvulsants must be taken regularly and tapered only under supervision; driving is restricted per medical advice." },
+{ q: "A patient with a frontal tumor is incontinent of urine and unconcerned about it. The nurse recognizes this as:", o: ["Urinary tract infection only", "Frontal lobe dysfunction affecting bladder control and social awareness", "Normal behavior", "Diabetes insipidus"], a: 1, r: "The frontal lobe contributes to voluntary bladder control and social inhibition; lesions cause incontinence with indifference." },
+{ q: "After cranial surgery, the nurse finds the patient newly confused with a GCS fall from 14 to 11 and a dilating pupil. What is the FIRST action?", o: ["Document and recheck later", "Notify the surgeon immediately — possible bleeding or rising ICP", "Give a sedative", "Ambulate the patient"], a: 1, p: true, r: "Deterioration in GCS with pupil changes suggests postoperative hemorrhage or edema requiring urgent evaluation (CT, possible surgery)." }
+]
+});

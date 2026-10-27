@@ -13,7 +13,7 @@
   /* ---------- helpers ---------- */
   function esc(s) { return String(s == null ? "" : s).replace(/[&<>"']/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]; }); }
   function fmt(s) {
-    return esc(s).replace(/\*\*(.+?)\*\*/g, "<b>$1</b>").replace(/==(.+?)==/g, "<mark>$1</mark>").replace(/__(.+?)__/g, "<i>$1</i>");
+    return esc(s).replace(/\*\*(.+?)\*\*/g, "<b>$1</b>").replace(/==(.+?)==/g, "<mark>$1</mark>").replace(/__(.+?)__/g, "<i>$1</i>").replace(/(^|[^*])\*([^*\s][^*]*?)\*(?!\*)/g, "$1<i>$2</i>");
   }
   function h(tag, attrs, html) {
     var a = "";
@@ -203,7 +203,7 @@
     }
   }
   function tbl(hd, rows) {
-    return '<div class="tbl-wrap"><table><thead><tr>' + hd.map(function (x) { return "<th>" + fmt(x) + "</th>"; }).join("") + "</tr></thead><tbody>" +
+    return '<div class="tbl-wrap"><table' + (hd.length >= 3 ? ' class="wide"' : "") + '><thead><tr>' + hd.map(function (x) { return "<th>" + fmt(x) + "</th>"; }).join("") + "</tr></thead><tbody>" +
       rows.map(function (r) { return "<tr>" + r.map(function (x) { return "<td>" + fmt(x) + "</td>"; }).join("") + "</tr>"; }).join("") + "</tbody></table></div>";
   }
   function cycleSvg(n, center) {

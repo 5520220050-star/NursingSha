@@ -191,7 +191,8 @@ b, strong { color: inherit; font-weight: 700; }
 mark { background: var(--gold-soft); color: inherit; padding: 0 3px; border-radius: 4px; }
 
 .tbl-wrap { overflow-x: auto; border: 1px solid var(--line); border-radius: 12px; background: var(--surface); }
-table { border-collapse: collapse; width: 100%; font-size: 14px; min-width: 460px; }
+table { border-collapse: collapse; width: 100%; font-size: 14px; }
+table.wide { min-width: 520px; }
 th, td { padding: 8px 10px; border-bottom: 1px solid var(--line); text-align: left; vertical-align: top; }
 th { background: var(--navy); color: #f6efe0; font-weight: 600; }
 :root[data-theme="dark"] th { background: #233777; }

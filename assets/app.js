@@ -194,7 +194,47 @@
       default: return "";
     }
   }
+  /* real photos: resolved in the reader's browser from Wikipedia/Wikimedia Commons, with author + license credit */
+  var WCACHE = load("ns-wimg-v1", {});
+  function wjson(u) { return fetch(u).then(function (r) { if (!r.ok) throw r.status; return r.json(); }); }
+  function wresolve(title) {
+    if (WCACHE[title] !== undefined) return Promise.resolve(WCACHE[title]);
+    return wjson("https://en.wikipedia.org/api/rest_v1/page/summary/" + encodeURIComponent(title.replace(/ /g, "_"))).then(function (sm) {
+      var img = (sm.originalimage || sm.thumbnail || {}).source || "";
+      var m = img.match(/\/wikipedia\/commons\/(?:thumb\/)?[0-9a-f]\/[0-9a-f]{2}\/([^\/]+)/);
+      if (!m) return null;
+      var file = decodeURIComponent(m[1]);
+      return wjson("https://commons.wikimedia.org/w/api.php?action=query&format=json&origin=*&prop=imageinfo&iiprop=url|size|extmetadata&iiurlwidth=1280&titles=File:" + encodeURIComponent(file)).then(function (d) {
+        var pg = d.query && d.query.pages, k = pg && Object.keys(pg)[0], ii = k && pg[k].imageinfo && pg[k].imageinfo[0];
+        if (!ii) return null;
+        var md = ii.extmetadata || {}, txt = function (x) { var e = document.createElement("div"); e.innerHTML = (md[x] && md[x].value) || ""; return (e.textContent || "").replace(/\s+/g, " ").trim(); };
+        var lic = txt("LicenseShortName"); if (!lic || /fair use|non-free/i.test(lic)) return null;
+        return { src: ii.thumburl || ii.url, full: ii.url, w: ii.thumbwidth || ii.width, h: ii.thumbheight || ii.height, by: txt("Artist").slice(0, 80) || "Wikimedia Commons", lic: lic, u: ii.descriptionurl, file: file };
+      });
+    }).then(function (r) { WCACHE[title] = r; save("ns-wimg-v1", WCACHE); return r; }, function () { return null; });
+  }
+  function hydratePhotos(root) {
+    var seen = {};
+    [].forEach.call(root.querySelectorAll("figure[data-wiki]"), function (fig) {
+      wresolve(fig.getAttribute("data-wiki")).then(function (r) {
+        if (!r || seen[r.file]) { fig.parentNode && fig.parentNode.removeChild(fig); return; }
+        seen[r.file] = 1;
+        var cap = fig.querySelector("figcaption");
+        var a = document.createElement("a"); a.className = "ph-link"; a.href = r.full; a.target = "_blank"; a.rel = "noopener";
+        var im = new Image(); im.loading = "lazy"; im.decoding = "async"; im.alt = fig.getAttribute("data-alt") || ""; if (r.w) { im.width = r.w; im.height = r.h; }
+        im.onerror = function () { fig.parentNode && fig.parentNode.removeChild(fig); };
+        im.src = r.src;
+        a.appendChild(im); fig.replaceChild(a, fig.querySelector(".ph-wait"));
+        var cr = document.createElement("span"); cr.className = "credit";
+        cr.innerHTML = 'Image: <a href="' + esc(r.u) + '" target="_blank" rel="noopener">' + esc(r.by) + "</a> · " + esc(r.lic) + ' · <a href="' + esc(r.u) + '" target="_blank" rel="noopener">Wikimedia Commons</a>';
+        cap.appendChild(cr); fig.classList.add("ready");
+      });
+    });
+  }
   function photo(b) {
+    if (b.w && !b.src) {
+      return '<figure class="blk photo" data-wiki="' + esc(b.w) + '" data-alt="' + esc((b.en || "").replace(/\*\*/g, "")) + '"><div class="ph-wait"></div><figcaption>' + (b.en ? fmt(b.en) : "") + (b.ar ? '<span class="ar" lang="ar" dir="rtl">' + esc(b.ar) + "</span>" : "") + "</figcaption></figure>";
+    }
     var cap = (b.en ? fmt(b.en) : "") + (b.ar ? '<span class="ar" lang="ar" dir="rtl">' + esc(b.ar) + "</span>" : "");
     var cr = '<span class="credit">Image: <a href="' + esc(b.u) + '" target="_blank" rel="noopener">' + esc(b.by || "Wikimedia Commons") + "</a>" + (b.lic ? " · " + esc(b.lic) : "") + ' · <a href="' + esc(b.u) + '" target="_blank" rel="noopener">source</a></span>';
     return '<figure class="blk photo"><a class="ph-link" href="' + esc(b.full || b.src) + '" target="_blank" rel="noopener"><img loading="lazy" decoding="async" src="' + esc(b.src) + '"' + (b.w ? ' width="' + b.w + '" height="' + b.h + '"' : "") + ' alt="' + esc((b.en || "").replace(/\*\*/g, "")) + '" onerror="this.closest(\'figure\').style.display=\'none\'"></a><figcaption>' + cap + cr + "</figcaption></figure>";
@@ -257,6 +297,7 @@
     var prev = sy.topics[idx - 1], next = sy.topics[idx + 1];
     if (prev || next) h += '<nav class="nextnav">' + (prev ? '<a href="' + base + "/" + prev.id + '"><small>Previous topic</small><b>' + esc(prev.en) + "</b></a>" : "<span></span>") + (next ? '<a class="nx" href="' + base + "/" + next.id + '"><small>Next topic</small><b>' + esc(next.en) + "</b></a>" : "") + "</nav>";
     pane.innerHTML = h + "</div>";
+    if (window.fetch) hydratePhotos(pane);
   }
   function normQ(q, i) { var a = Array.isArray(q.a) ? q.a : [q.a]; return { id: i, q: q.q, o: q.o, a: a, r: q.r, sata: !!q.s || a.length > 1, pr: !!q.p }; }
   function quizSetup(pane, sid, sys, tid, d) {

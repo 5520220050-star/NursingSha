@@ -292,3 +292,6 @@ ol.cyc .ar { padding: 3px 8px; margin-top: 3px; }
 .photo figcaption .ar { margin-top: 4px; color: var(--muted); }
 .photo .credit { display: block; margin-top: 6px; font-size: 12px; color: var(--muted); }
 .photo .credit a { color: var(--green); }
+.photo .ph-wait { height: 220px; background: linear-gradient(90deg, var(--line) 0%, var(--surface) 50%, var(--line) 100%); background-size: 200% 100%; animation: shimmer 1.4s linear infinite; }
+@keyframes shimmer { to { background-position: -200% 0; } }
+@media (prefers-reduced-motion: reduce) { .photo .ph-wait { animation: none; } }

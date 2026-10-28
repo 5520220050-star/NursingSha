@@ -202,7 +202,8 @@
     var th = stats(sid, s.theory), pr = stats(sid, s.practical);
     return crumbs([{ t: s.en }]) + head(s.en, s.ar, "Choose theoretical or practical content.") +
       '<div class="choice"><a href="#/s/' + sid + '/theory"><b>Theoretical</b><div class="a" lang="ar">النظري</div><div class="m">' + s.theory.length + " systems, " + th.n + " topics</div></a>" +
-      '<a class="pr" href="#/s/' + sid + '/practical"><b>Practical</b><div class="a" lang="ar">العملي</div><div class="m">' + s.practical.length + " wards/areas, " + pr.n + " topics</div></a></div>";
+      '<a class="pr" href="#/s/' + sid + '/practical"><b>Practical</b><div class="a" lang="ar">العملي</div><div class="m">' + s.practical.length + " wards/areas, " + pr.n + " topics</div></a></div>" +
+      '<a class="examcard" href="#/s/' + sid + '/exam"><div class="ei">' + icon("clock") + '</div><div><b>Mock exam</b> <span lang="ar">· امتحان تجريبي</span><div class="m">Timed exam mixing questions from all ' + (th.n + pr.n) + " topics of this subject, with results by system.</div></div>" + CHEV + "</a>" + offlineCard(sid);
   }
   function vSystems(sid, kind) {
     var s = subj(sid); if (!s || !s[kind]) return nf();
@@ -325,7 +326,7 @@
     setBack(base);
     $main.innerHTML = '<div class="loading">Loading… جارِ التحميل</div>';
     loadTopic(sid, sysId, tid, function (d) {
-      if (!d) { $main.innerHTML = crumbs([{ t: s.en, href: "#/s/" + sid }, { t: sy.en, href: base }]) + nf("This lecture is not ready yet · هذه المحاضرة غير جاهزة بعد"); return; }
+      if (!d) { $main.innerHTML = crumbs([{ t: s.en, href: "#/s/" + sid }, { t: sy.en, href: base }]) + nf(navigator.onLine ? "This lecture is not ready yet · هذه المحاضرة غير جاهزة بعد" : "You are offline and this lecture is not saved · أنت غير متصل"); return; }
       var k = kindName(kind), url = base + "/" + tid;
       var h = crumbs([{ t: s.en, href: "#/s/" + sid }, { t: k.en, href: "#/s/" + sid + "/" + kind }, { t: sy.en, href: base }]) + head(t.en, t.ar) +
         '<div class="lec-bar"><div class="seg" role="tablist"><a role="tab" href="' + url + '" aria-selected="' + (mode !== "quiz") + '">Lecture</a><a role="tab" href="' + url + '/quiz" aria-selected="' + (mode === "quiz") + '">Quiz (' + d.questions.length + ")</a></div>" +
@@ -336,6 +337,7 @@
       if (mode === "quiz") quizSetup(pane, sid, sysId, tid, d);
       else {
         lecture(pane, d, url, sy, idx, base);
+        if (mode && mode.indexOf("sec-") === 0) { var se = document.getElementById(mode); if (se) { setTimeout(function () { se.scrollIntoView({ block: "start" }); se.classList.add("flash"); }, 60); } }
         document.getElementById("arSwitch").onclick = function () { arOn = !arOn; save("ns-ar", arOn); applyAr(); };
       }
     });
@@ -434,12 +436,274 @@
     if (!any) return h + '<div class="panel empty"><p>No quizzes taken yet. Open a topic and start its quiz.</p><a class="btn" href="#/">Browse subjects</a></div>';
     return h + '<div style="text-align:center;margin-top:20px"><button class="btn ghost" id="reset">Reset all progress</button></div>';
   }
+  /* ===== loading many topics ===== */
+  function topicList(sid, scope) {
+    var s = subj(sid), out = [];
+    ["theory", "practical"].forEach(function (kind) {
+      if (scope !== "both" && scope !== kind) return;
+      s[kind].forEach(function (sy) { sy.topics.forEach(function (t) { if (man(sid, sy.id, t.id)) out.push({ sid: sid, kind: kind, sys: sy, t: t }); }); });
+    });
+    return out;
+  }
+  function loadMany(list, onStep, cb) {
+    var n = list.length, res = new Array(n), left = n, next = 0;
+    if (!n) return cb(res);
+    function go() {
+      if (next >= n) return; var k = next++, x = list[k];
+      loadTopic(x.sid, x.sys.id, x.t.id, function (d) { res[k] = d; left--; if (onStep) onStep(n - left, n); if (!left) cb(res); else go(); });
+    }
+    for (var c = 0; c < 4; c++) go();
+  }
+  function mmss(ms) { var s = Math.max(0, Math.round(ms / 1000)), h = Math.floor(s / 3600), m = Math.floor(s % 3600 / 60), x = s % 60; return (h ? h + ":" + (m < 10 ? "0" : "") : "") + m + ":" + (x < 10 ? "0" : "") + x; }
+  function ring(pct) {
+    var C = 2 * Math.PI * 60, col = pct >= 75 ? "var(--green)" : pct >= 50 ? "var(--gold)" : "var(--red)";
+    return '<svg class="ring" viewBox="0 0 150 150"><circle class="bg" cx="75" cy="75" r="60"/><circle class="fg" cx="75" cy="75" r="60" style="stroke:' + col + ";stroke-dasharray:" + C + ";stroke-dashoffset:" + C * (1 - pct / 100) + '"/><text x="75" y="75">' + pct + "%</text></svg>";
+  }
+
+  /* ===== mock exam ===== */
+  var examTimer = null;
+  function stopExam() { if (examTimer) { clearInterval(examTimer); examTimer = null; } window.onbeforeunload = null; }
+  var SCOPES = { both: "Theory + Practical", theory: "Theory only", practical: "Practical only" };
+  function vExam(sid) {
+    var s = subj(sid); if (!s) { $main.innerHTML = nf(); return; }
+    setBack("#/s/" + sid);
+    var st = load("ns-exam-set", { scope: "both", n: 50, timed: true });
+    function render() {
+      var list = topicList(sid, st.scope), pool = list.reduce(function (a, x) { return a + man(sid, x.sys.id, x.t.id).q; }, 0);
+      var counts = [25, 50, 100].filter(function (c) { return c <= pool; }); if (!counts.length) counts = [pool];
+      if (counts.indexOf(st.n) < 0) st.n = counts[Math.min(1, counts.length - 1)];
+      var hist = load("ns-exams", {})[sid] || [];
+      var h = crumbs([{ t: s.en, href: "#/s/" + sid }, { t: "Mock exam" }]) + head("Mock exam", "امتحان تجريبي — " + s.ar, "Mixed questions from every topic of " + esc(s.en) + ". Answers and rationales appear only at the end, like a real exam.") +
+        '<div class="panel exam-set">' +
+        '<div class="lbl2">Content · المحتوى</div><div class="seg wrap" id="sc">' + Object.keys(SCOPES).map(function (k) { return '<button type="button" data-v="' + k + '" aria-pressed="' + (st.scope === k) + '">' + SCOPES[k] + "</button>"; }).join("") + "</div>" +
+        '<div class="lbl2">Number of questions · عدد الأسئلة</div><div class="seg" id="nc">' + counts.map(function (c) { return '<button type="button" data-v="' + c + '" aria-pressed="' + (st.n === c) + '">' + c + "</button>"; }).join("") + "</div>" +
+        '<div class="lbl2">Timer · المؤقت</div><div class="seg" id="tm"><button type="button" data-v="1" aria-pressed="' + st.timed + '">1 minute per question</button><button type="button" data-v="0" aria-pressed="' + !st.timed + '">No timer</button></div>' +
+        '<p class="exam-sum">' + st.n + " questions" + (st.timed ? " · " + st.n + " minutes" : "") + " · drawn from " + list.length + " topics (" + pool + " questions)</p>" +
+        '<div class="btn-row"><button class="btn" id="go">Start exam · ابدأ</button></div>' +
+        '<p class="fine2">You can move between questions, flag them and change answers before you submit. When the timer ends, the exam is submitted automatically.</p></div>';
+      if (hist.length) h += '<div class="section-label">Previous attempts · المحاولات السابقة</div><div class="rows">' + hist.map(function (x) {
+        var d = new Date(x.t); return '<div class="row off"><div class="ic num">' + x.pct + '%</div><div><div class="t">' + x.c + " of " + x.n + ' correct</div><div class="m">' + d.toLocaleDateString() + " · " + (SCOPES[x.scope] || "") + (x.dur ? " · " + mmss(x.dur) : "") + "</div></div><div></div></div>";
+      }).join("") + "</div>";
+      $main.innerHTML = h;
+      function bind(id, f) { $main.querySelectorAll("#" + id + " button").forEach(function (b) { b.onclick = function () { f(b.dataset.v); save("ns-exam-set", st); render(); }; }); }
+      bind("sc", function (v) { st.scope = v; }); bind("nc", function (v) { st.n = +v; }); bind("tm", function (v) { st.timed = v === "1"; });
+      document.getElementById("go").onclick = function () {
+        $main.innerHTML = '<div class="panel empty"><p>Preparing your exam… <b id="lp">0</b> / ' + list.length + ' topics</p><p class="muted" lang="ar">جارِ تجهيز الامتحان</p></div>';
+        loadMany(list, function (a) { var e = document.getElementById("lp"); if (e) e.textContent = a; }, function (ds) {
+          var all = [];
+          ds.forEach(function (d, k) { if (!d) return; var x = list[k]; d.questions.forEach(function (q, qi) { var nq = normQ(q, qi); nq.src = x; all.push(nq); }); });
+          if (!all.length) { $main.innerHTML = nf(navigator.onLine ? "Could not load the questions." : "You are offline and this subject is not saved for offline use."); return; }
+          runExam(sid, shuffle(all).slice(0, st.n), st);
+        });
+      };
+    }
+    render();
+  }
+  function runExam(sid, qs, st) {
+    var s = subj(sid), n = qs.length, cur = 0, mapOpen = false, started = Date.now(), endAt = st.timed ? started + n * 60000 : 0;
+    var ans = qs.map(function () { return []; }), flag = qs.map(function () { return false; }), order = qs.map(function (q) { return shuffle(q.o.map(function (_, k) { return k; })); });
+    setBack(null);
+    window.onbeforeunload = function () { return "Your exam is in progress."; };
+    function answered() { return ans.filter(function (a) { return a.length; }).length; }
+    function clock() {
+      var e = document.getElementById("clock"); if (!e) return;
+      if (!endAt) { e.textContent = mmss(Date.now() - started); return; }
+      var left = endAt - Date.now(); e.textContent = mmss(left); e.classList.toggle("low", left < 5 * 60000);
+      if (left <= 0) submit(true);
+    }
+    function mapHtml() {
+      return '<details class="qmap"' + (mapOpen ? " open" : "") + '><summary>Question map · ' + answered() + " of " + n + ' answered</summary><div class="grid">' + qs.map(function (_, i) {
+        return '<button type="button" data-j="' + i + '" class="' + (ans[i].length ? "done" : "") + (flag[i] ? " fl" : "") + (i === cur ? " cur" : "") + '">' + (i + 1) + "</button>";
+      }).join("") + '</div><div class="legend"><span class="k done"></span>Answered <span class="k fl"></span>Flagged <span class="k"></span>Not answered</div></details>';
+    }
+    function show() {
+      var q = qs[cur], ord = order[cur];
+      $main.innerHTML = '<div class="panel exam"><div class="qhead"><span>' + esc(s.en) + " · Question " + (cur + 1) + " of " + n + '</span><span class="clock" id="clock"></span></div><div class="qbar"><i style="width:' + (100 * answered() / n) + '%"></i></div>' +
+        '<div class="qtags">' + (q.sata ? '<span class="badge gold">Select all that apply</span>' : '<span class="badge gray">Choose one answer</span>') + (q.pr ? '<span class="badge red">Priority</span>' : "") + (flag[cur] ? '<span class="badge gold">Flagged</span>' : "") + "</div>" +
+        '<div class="qtext">' + fmt(q.q) + '</div><div class="options">' + ord.map(function (k, m) { return '<button type="button" class="opt' + (q.sata ? " sata" : "") + '" aria-pressed="' + (ans[cur].indexOf(k) >= 0) + '" data-k="' + k + '"><span class="k">' + String.fromCharCode(65 + m) + "</span><span>" + fmt(q.o[k]) + "</span></button>"; }).join("") + "</div>" +
+        '<div class="exam-nav"><button class="btn ghost" id="pv"' + (cur ? "" : " disabled") + '>Previous</button><button class="btn ghost" id="fg" aria-pressed="' + flag[cur] + '">' + (flag[cur] ? "Unflag" : "Flag") + "</button>" + (cur + 1 < n ? '<button class="btn" id="nx">Next</button>' : '<button class="btn" id="sb2">Submit exam</button>') + "</div>" +
+        mapHtml() + '<div class="exam-end"><button class="btn ghost danger" id="sb">Submit exam · إنهاء الامتحان</button></div></div>';
+      clock();
+      $main.querySelectorAll(".opt").forEach(function (b) {
+        b.onclick = function () {
+          var k = +b.dataset.k, a = ans[cur];
+          if (q.sata) { var at = a.indexOf(k); if (at >= 0) a.splice(at, 1); else a.push(k); } else ans[cur] = a = [k];
+          $main.querySelectorAll(".opt").forEach(function (x) { x.setAttribute("aria-pressed", String(a.indexOf(+x.dataset.k) >= 0)); });
+          var bar = $main.querySelector(".qbar i"); if (bar) bar.style.width = (100 * answered() / n) + "%";
+          var mp = $main.querySelector(".qmap"); if (mp) { mapOpen = mp.open; mp.outerHTML = mapHtml(); bindMap(); }
+        };
+      });
+      document.getElementById("pv").onclick = function () { cur--; show(); window.scrollTo(0, 0); };
+      document.getElementById("fg").onclick = function () { flag[cur] = !flag[cur]; show(); };
+      var nx = document.getElementById("nx"); if (nx) nx.onclick = function () { cur++; show(); window.scrollTo(0, 0); };
+      var s2 = document.getElementById("sb2"); if (s2) s2.onclick = function () { submit(false); };
+      document.getElementById("sb").onclick = function () { submit(false); };
+      bindMap();
+    }
+    function bindMap() {
+      var mp = $main.querySelector(".qmap"); if (!mp) return;
+      mp.addEventListener("toggle", function () { mapOpen = mp.open; });
+      mp.querySelectorAll("button").forEach(function (b) { b.onclick = function () { cur = +b.dataset.j; mapOpen = true; show(); }; });
+    }
+    function submit(forced) {
+      if (!forced) {
+        var un = n - answered(), fl = flag.filter(Boolean).length;
+        var msg = (un ? un + " question(s) are not answered. " : "") + (fl ? fl + " question(s) are flagged. " : "") + "Submit the exam now?";
+        if (!confirm(msg)) return;
+      }
+      stopExam();
+      var dur = Date.now() - started, res = qs.map(function (q, i) { var a = ans[i]; return { q: q, picked: a, ok: a.length === q.a.length && a.every(function (k) { return q.a.indexOf(k) >= 0; }), skip: !a.length, i: i }; });
+      var c = res.filter(function (r) { return r.ok; }).length, pct = Math.round(100 * c / n), un = res.filter(function (r) { return r.skip; }).length;
+      var all = load("ns-exams", {}), hist = all[sid] || []; hist.unshift({ t: Date.now(), pct: pct, c: c, n: n, scope: st.scope, dur: dur }); all[sid] = hist.slice(0, 10); save("ns-exams", all);
+      var by = {}, keys = [];
+      res.forEach(function (r) { var x = r.q.src, k = x.kind + "/" + x.sys.id; if (!by[k]) { by[k] = { x: x, c: 0, n: 0 }; keys.push(k); } by[k].n++; if (r.ok) by[k].c++; });
+      keys.sort(function (a, b) { return by[a].c / by[a].n - by[b].c / by[b].n; });
+      var msg2 = pct >= 85 ? "Excellent — you are well prepared in this subject." : pct >= 65 ? "Good. Focus on the systems at the top of the list below." : "Keep going. Re-read the lectures of your weakest systems, then try again.";
+      var h = '<div class="panel result">' + ring(pct) + '<div style="font-weight:700;font-size:18px;color:var(--ink)">' + c + " of " + n + " correct</div><div>" + esc(s.en) + " mock exam · " + (un ? un + " not answered · " : "") + "time " + mmss(dur) + "</div><div style=\"margin-top:6px\">" + msg2 + '</div><div class="btn-row" style="justify-content:center"><a class="btn" href="#/s/' + sid + '/exam">New exam</a><a class="btn ghost" href="#/s/' + sid + '">Back to subject</a></div></div>';
+      h += '<div class="section-label">Results by system · النتائج حسب المحور</div><div class="panel bysys">' + keys.map(function (k) {
+        var b = by[k], p = Math.round(100 * b.c / b.n), col = p >= 75 ? "var(--green)" : p >= 50 ? "var(--gold)" : "var(--red)";
+        return '<a class="sysrow" href="#/s/' + sid + "/" + b.x.kind + "/" + b.x.sys.id + '"><span class="nm">' + esc(b.x.sys.en) + (b.x.kind === "practical" ? ' <small>(practical)</small>' : "") + '</span><span class="sc">' + b.c + "/" + b.n + '</span><span class="pb"><i style="width:' + p + "%;background:" + col + '"></i></span><span class="pc">' + p + "%</span></a>";
+      }).join("") + "</div>";
+      var wrong = res.filter(function (r) { return !r.ok; });
+      h += '<div class="section-label">Review · المراجعة</div><div class="seg" id="rf"><button type="button" data-v="w" aria-pressed="true">Wrong or unanswered (' + wrong.length + ')</button><button type="button" data-v="a" aria-pressed="false">All (' + n + ')</button></div><div class="review" id="rv"></div>';
+      $main.innerHTML = h; window.scrollTo(0, 0); setBack("#/s/" + sid);
+      function rv(list) {
+        document.getElementById("rv").innerHTML = list.length ? list.map(function (r) {
+          var x = r.q.src;
+          return '<div class="panel"><div class="qn">Question ' + (r.i + 1) + (r.ok ? ' <span class="badge">Correct</span>' : r.skip ? ' <span class="badge gray">Not answered</span>' : ' <span class="badge red">Wrong</span>') + '</div><div style="font-weight:600;color:var(--ink)">' + fmt(r.q.q) + '</div><div class="ans"><span class="g">Correct:</span> ' + r.q.a.map(function (k) { return fmt(r.q.o[k]); }).join("; ") + "</div>" +
+            (r.skip ? "" : '<div class="ans"><span class="' + (r.ok ? "g" : "r") + '">You chose:</span> ' + r.picked.map(function (k) { return fmt(r.q.o[k]); }).join("; ") + "</div>") + '<div class="ans"><b>Why:</b> ' + fmt(r.q.r) + '</div><div class="from">From: <a href="#/s/' + sid + "/" + x.kind + "/" + x.sys.id + "/" + x.t.id + '">' + esc(x.t.en) + "</a> · " + esc(x.sys.en) + "</div></div>";
+        }).join("") : '<div class="panel empty"><p>No wrong answers — well done!</p></div>';
+      }
+      rv(wrong);
+      $main.querySelectorAll("#rf button").forEach(function (b) { b.onclick = function () { $main.querySelectorAll("#rf button").forEach(function (y) { y.setAttribute("aria-pressed", String(y === b)); }); rv(b.dataset.v === "w" ? wrong : res); }; });
+    }
+    show();
+    examTimer = setInterval(clock, 1000);
+  }
+
+  /* ===== search ===== */
+  function norm(x) { return String(x || "").toLowerCase().replace(/[أإآٱ]/g, "ا").replace(/ى/g, "ي").replace(/ة/g, "ه").replace(/ؤ/g, "و").replace(/ئ/g, "ي"); }
+  var SIDX = null, sLoading = false;
+  function topicInfo() {
+    var m = {};
+    NS.subjects.forEach(function (s) { ["theory", "practical"].forEach(function (kind) { s[kind].forEach(function (sy) { sy.topics.forEach(function (t) { m[s.id + "/" + sy.id + "/" + t.id] = { s: s, kind: kind, sy: sy, t: t }; }); }); }); });
+    return m;
+  }
+  function loadSearch(cb) {
+    if (SIDX) return cb();
+    if (sLoading) { setTimeout(function () { loadSearch(cb); }, 200); return; }
+    sLoading = true;
+    var sc = document.createElement("script"); sc.src = "data/search.js?v=" + (NS.version || "1");
+    sc.onload = function () {
+      var info = topicInfo(), S = NS.search || { s: [], q: [] };
+      SIDX = {
+        s: S.s.map(function (r) { var ti = info[r[0]]; return { key: r[0], sec: r[1], h: r[2], ha: r[3], txt: r[4], n: norm(r[4]), nh: norm(r[2] + " " + r[3]), nt: ti ? norm(ti.t.en + " " + ti.t.ar) : "", ti: ti }; }).filter(function (x) { return x.ti; }),
+        q: S.q.map(function (r) { var ti = info[r[0]]; return { key: r[0], qi: r[1], q: r[2], o: r[3], a: r[4], r: r[5], n: norm(r[2] + " " + r[3].join(" ") + " " + r[5]), ti: ti }; }).filter(function (x) { return x.ti; })
+      };
+      sLoading = false; cb();
+    };
+    sc.onerror = function () { sLoading = false; cb(new Error("load")); };
+    document.head.appendChild(sc);
+  }
+  function hl(text, terms) {
+    var h = esc(text), nt = norm(text);
+    // mark matches using positions from the normalized copy (same length as original)
+    var marks = [];
+    terms.forEach(function (t) { var i = 0, p; while ((p = nt.indexOf(t, i)) >= 0 && marks.length < 40) { marks.push([p, p + t.length]); i = p + t.length; } });
+    if (!marks.length) return h;
+    marks.sort(function (a, b) { return a[0] - b[0]; });
+    var out = "", last = 0;
+    marks.forEach(function (m) { if (m[0] < last) return; out += esc(text.slice(last, m[0])) + "<mark>" + esc(text.slice(m[0], m[1])) + "</mark>"; last = m[1]; });
+    return out + esc(text.slice(last));
+  }
+  function snippet(x, terms) {
+    var p = -1; terms.forEach(function (t) { var i = x.n.indexOf(t); if (i >= 0 && (p < 0 || i < p)) p = i; });
+    if (p < 0) p = 0;
+    var a = Math.max(0, p - 70), b = Math.min(x.txt.length, p + 170);
+    while (a > 0 && !/\s/.test(x.txt[a - 1])) a--;
+    return (a > 0 ? "… " : "") + hl(x.txt.slice(a, b), terms) + (b < x.txt.length ? " …" : "");
+  }
+  function vSearch(q0) {
+    setBack("#/");
+    $main.innerHTML = head("Search", "البحث", "Search every lecture and question — in English or Arabic.") +
+      '<div class="searchbox"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg><input id="sq" type="search" placeholder="e.g. lithium, preeclampsia, الحمى" autocomplete="off" value="' + esc(q0) + '"></div>' +
+      '<div class="seg" id="sf" style="margin-top:10px"><button type="button" data-v="all" aria-pressed="true">All</button>' + NS.subjects.map(function (s) { return '<button type="button" data-v="' + s.id + '" aria-pressed="false">' + esc(s.en.split(" ")[0]) + "</button>"; }).join("") + '</div><div id="sr"></div>';
+    var inp = document.getElementById("sq"), out = document.getElementById("sr"), sf = "all", tmr = null;
+    $main.querySelectorAll("#sf button").forEach(function (b) { b.onclick = function () { sf = b.dataset.v; $main.querySelectorAll("#sf button").forEach(function (y) { y.setAttribute("aria-pressed", String(y === b)); }); go(); }; });
+    function go() {
+      var q = inp.value.trim();
+      try { history.replaceState(null, "", "#/search" + (q ? "/" + encodeURIComponent(q) : "")); } catch (e) {}
+      var terms = norm(q).split(/\s+/).filter(function (t) { return t.length > 1; });
+      if (!terms.length) { out.innerHTML = '<p class="muted" style="margin-top:16px">Type at least two letters.</p>'; return; }
+      out.innerHTML = '<div class="loading">Searching… جارِ البحث</div>';
+      loadSearch(function (err) {
+        if (err) { out.innerHTML = '<div class="panel empty"><p>' + (navigator.onLine ? "Search is not available right now." : "Search needs to be downloaded once while online.") + "</p></div>"; return; }
+        function okS(x) { return sf === "all" || x.key.indexOf(sf + "/") === 0; }
+        var S = [], Q = [];
+        SIDX.s.forEach(function (x) {
+          if (!okS(x)) return; var sc = 0;
+          for (var i = 0; i < terms.length; i++) { var t = terms[i], inT = x.nt.indexOf(t) >= 0, inH = x.nh.indexOf(t) >= 0, inX = x.n.indexOf(t) >= 0; if (!inT && !inH && !inX) return; sc += (inT ? 8 : 0) + (inH ? 5 : 0) + (inX ? 1 + Math.min(4, x.n.split(t).length - 2) : 0); }
+          S.push([sc, x]);
+        });
+        SIDX.q.forEach(function (x) { if (!okS(x)) return; for (var i = 0; i < terms.length; i++) if (x.n.indexOf(terms[i]) < 0) return; Q.push(x); });
+        S.sort(function (a, b) { return b[0] - a[0]; });
+        var h = '<div class="section-label">Lectures · المحاضرات (' + S.length + ")</div>";
+        h += S.length ? '<div class="sres">' + S.slice(0, 40).map(function (p) {
+          var x = p[1], ti = x.ti;
+          return '<a class="sitem" href="#/s/' + ti.s.id + "/" + ti.kind + "/" + ti.sy.id + "/" + ti.t.id + (x.sec >= 0 ? "/sec-" + x.sec : "") + '"><div class="pth">' + esc(ti.s.en) + " › " + esc(ti.sy.en) + '</div><div class="tt">' + hl(ti.t.en, terms) + " — " + hl(x.h, terms) + '</div><div class="sn">' + snippet(x, terms) + "</div></a>";
+        }).join("") + "</div>" + (S.length > 40 ? '<p class="muted">Showing the best 40. Add another word to narrow the results.</p>' : "") : '<p class="muted">No lecture sections found.</p>';
+        h += '<div class="section-label">Questions · الأسئلة (' + Q.length + ")</div>";
+        h += Q.length ? '<div class="sres">' + Q.slice(0, 40).map(function (x) {
+          var ti = x.ti;
+          return '<details class="sq"><summary><div class="pth">' + esc(ti.s.en) + " › " + esc(ti.t.en) + '</div><div class="tt">' + hl(x.q, terms) + '</div></summary><ul class="sopts">' + x.o.map(function (o, k) { return '<li class="' + (x.a.indexOf(k) >= 0 ? "ok" : "") + '">' + hl(o, terms) + "</li>"; }).join("") + '</ul><div class="ans"><b>Why:</b> ' + hl(x.r, terms) + '</div><a class="from" href="#/s/' + ti.s.id + "/" + ti.kind + "/" + ti.sy.id + "/" + ti.t.id + '/quiz">Open this topic\'s quiz</a></details>';
+        }).join("") + "</div>" + (Q.length > 40 ? '<p class="muted">Showing 40 of ' + Q.length + ".</p>" : "") : '<p class="muted">No questions found.</p>';
+        out.innerHTML = h;
+      });
+    }
+    inp.oninput = function () { clearTimeout(tmr); tmr = setTimeout(go, 250); };
+    if (q0) go(); else { out.innerHTML = ""; setTimeout(function () { inp.focus(); }, 50); loadSearch(function () {}); }
+  }
+
+  /* ===== offline ===== */
+  var offl = load("ns-offline", {});
+  function saveOffline(sid, btn) {
+    var list = topicList(sid, "both"), urls = list.map(function (x) { return "data/" + sid + "/" + x.sys.id + "/" + x.t.id + ".js?v=" + NS.version; });
+    urls.push("data/img/" + sid + ".js?v=" + NS.version, "data/search.js?v=" + NS.version, "data/registry.js", "assets/logo.jpg", "assets/logo-256.jpg", "./");
+    var done = 0, fail = 0, i = 0;
+    btn.disabled = true;
+    function step() {
+      if (i >= urls.length) {
+        btn.disabled = false;
+        if (fail) { btn.textContent = "Some files failed — tap to retry"; return; }
+        offl[sid] = { v: NS.version, t: Date.now() }; save("ns-offline", offl);
+        btn.textContent = "Saved for offline ✓ · محفوظ"; btn.classList.add("ok"); toast("Saved — lectures and quizzes now open without internet");
+        return;
+      }
+      var u = urls[i++];
+      fetch(u, { cache: "reload" }).then(function (r) { if (!r.ok) fail++; }).catch(function () { fail++; }).then(function () { done++; btn.textContent = "Saving… " + done + " / " + urls.length; step(); });
+    }
+    step();
+  }
+  function offlineCard(sid) {
+    if (!("serviceWorker" in navigator) || !window.fetch) return "";
+    var o = offl[sid], fresh = o && o.v === NS.version;
+    return '<div class="offcard"><div><b>Use offline · بدون إنترنت</b><div class="m">' + (fresh ? "Saved on " + new Date(o.t).toLocaleDateString() + ". Lectures and quizzes open without internet. Pictures appear only if you viewed them before." : o ? "Content was updated since you saved it. Save again to get the new version." : "Save all lectures and quizzes of this subject on this device. Pictures are kept only once you have viewed them.") + '</div></div><button class="btn' + (fresh ? " ghost ok" : "") + '" id="offBtn" type="button">' + (fresh ? "Saved ✓ · Update" : "Save for offline") + "</button></div>";
+  }
+  if ("serviceWorker" in navigator && (location.protocol === "https:" || location.hostname === "localhost")) {
+    window.addEventListener("load", function () { navigator.serviceWorker.register("sw.js").catch(function () {}); });
+  }
+  window.addEventListener("offline", function () { toast("You are offline — saved lectures still work"); });
+  window.addEventListener("online", function () { toast("Back online"); });
+
   function nf(m) { return '<div class="panel empty"><p>' + esc(m || "Page not found · الصفحة غير موجودة") + '</p><a class="btn" href="#/">Go to home</a></div>'; }
 
   /* router */
   function route() {
+    stopExam();
     var p = location.hash.replace(/^#\/?/, "").split("/").filter(Boolean), h = null;
     if (!p.length) h = vHome();
+    else if (p[0] === "search") { vSearch(p[1] ? decodeURIComponent(p.slice(1).join("/")) : ""); window.scrollTo(0, 0); return; }
+    else if (p[0] === "s" && p.length === 3 && p[2] === "exam") { vExam(p[1]); window.scrollTo(0, 0); return; }
     else if (p[0] === "progress") h = vProgress();
     else if (p[0] === "s" && p.length === 2) h = vSubject(p[1]);
     else if (p[0] === "s" && p.length === 3) h = vSystems(p[1], p[2]);
@@ -447,6 +711,7 @@
     else if (p[0] === "s" && p.length >= 5) { vTopic(p[1], p[2], p[3], p[4], p[5]); window.scrollTo(0, 0); return; }
     else h = nf();
     $main.innerHTML = h; window.scrollTo(0, 0);
+    var ob = document.getElementById("offBtn"); if (ob) ob.onclick = function () { saveOffline(p[1], ob); };
     var r = document.getElementById("reset"); if (r) r.onclick = function () { if (confirm("Delete all saved scores on this device?")) { prog = {}; save("ns-progress2", prog); route(); } };
   }
   document.addEventListener("click", function (e) {

@@ -397,5 +397,9 @@
     if (j) { e.preventDefault(); var el = document.getElementById(j.dataset.jump); if (el) el.scrollIntoView({ behavior: "smooth" }); }
   });
   window.addEventListener("hashchange", route);
+  // Telegram Mini Apps open the page with "#tgWebAppData=..." in the address — treat any non-route hash as home
+  if (location.hash && !/^#\//.test(location.hash)) {
+    try { history.replaceState(null, "", location.pathname + location.search + "#/"); } catch (e) { location.hash = "#/"; }
+  }
   route();
 })();

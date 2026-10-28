@@ -55,8 +55,12 @@
     var out = [], j2 = m; for (g = n; g >= 1; g--) { var k2 = prv[g][j2]; out.unshift(L.slice(k2, j2).join(" ")); j2 = k2; }
     return out;
   }
+  var HAS_AR = /[\u0600-\u06FF]/;
+  function plain(x) { return String(x || "").replace(/\*\*|==|__/g, "").trim(); }
+  function inl(t) { return ' <span class="ar ar-in"><span class="sep">·</span> <bdi lang="ar" dir="rtl">' + fmt(t) + "</bdi></span>"; }
   function pair(en, ar) {
-    if (!ar) return fmt(en);
+    if (!ar || !HAS_AR.test(ar) || plain(ar) === plain(en)) return fmt(en);            // numbers/symbols/same text: no duplicate
+    if (plain(en).length <= 45 && plain(ar).length <= 45) return fmt(en) + inl(ar);    // short: same line
     var E = sentences(en), A = sentences(ar, true);
     if (E.length > 1 && A.length > 1 && E.length !== A.length) { if (E.length > A.length) E = group(E, A.length, A); else A = group(A, E.length, E); }
     if (E.length > 1 && E.length === A.length && E.every(balanced) && A.every(balanced))
@@ -293,7 +297,7 @@
   function tbl(hd, rows, ar) {
     var ah = ar && ar.h && ar.h.length === hd.length ? ar.h : null, ar_ = ar && ar.r && ar.r.length === rows.length ? ar.r : null;
     function cell(x, a) { return a ? pair(x, a) : fmt(x); }
-    var h = '<div class="tbl-wrap"><table' + (hd.length >= 3 ? ' class="wide"' : "") + "><thead><tr>" + hd.map(function (x, i) { return "<th>" + fmt(x) + (ah ? '<span class="ar ar-s" lang="ar" dir="rtl">' + fmt(ah[i]) + "</span>" : "") + "</th>"; }).join("") + "</tr></thead><tbody>" +
+    var h = '<div class="tbl-wrap"><table' + (hd.length >= 3 ? ' class="wide"' : "") + "><thead><tr>" + hd.map(function (x, i) { return "<th>" + fmt(x) + (ah && HAS_AR.test(ah[i]) && plain(ah[i]) !== plain(x) ? inl(ah[i]) : "") + "</th>"; }).join("") + "</tr></thead><tbody>" +
       rows.map(function (r, ri) { var a = ar_ && ar_[ri] && ar_[ri].length === r.length ? ar_[ri] : null; return "<tr>" + r.map(function (x, i) { return '<td data-l="' + esc(String(hd[i] || "").replace(/\*\*/g, "")) + '">' + cell(x, a && a[i]) + "</td>"; }).join("") + "</tr>"; }).join("") + "</tbody></table></div>";
     if (ar && (!ah || !ar_ || ar_.some(function (r, i) { return r.length !== rows[i].length; }))) h += '<div class="ar" lang="ar" dir="rtl" style="padding:6px">' + tbl(ar.h, ar.r) + "</div>";
     return h;

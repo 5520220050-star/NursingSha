@@ -300,3 +300,8 @@ ol.cyc .ar { padding: 3px 8px; margin-top: 3px; }
 th .ar.ar-s { font-weight: 500; margin: 3px 0 0; padding: 2px 6px; }
 td .ar { padding: 3px 8px; margin-top: 4px; }
 li > .ar { margin-bottom: 4px; }
+/* short Arabic on the same line */
+.ar.ar-in { display: none; background: none; border: 0; padding: 0; margin: 0; color: var(--green); font-weight: 600; }
+.ar.ar-in { direction: ltr; text-align: inherit; }
+.ar.ar-in .sep { color: var(--muted); font-weight: 400; }
+body.ar-on .ar.ar-in, .sec.ar-open .ar.ar-in { display: inline; }

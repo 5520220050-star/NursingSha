@@ -52,7 +52,7 @@ sections: [
 ]}
 ],
 questions: [
-{ q: "Cluster B personality disorders are described as:", o: ["Dramatic, emotional or erratic", "Odd or eccentric", "Anxious or fearful", "Psychotic"], a: 0, r: "\"Wild\" in the mnemonic." },
+{ q: "Cluster B personality disorders are described as:", o: ["Dramatic, emotional or erratic", "Odd or eccentric", "Anxious or fearful", "Psychotic"], a: 0, r: "Cluster B is \"Wild\" in the Weird–Wild–Worried mnemonic." },
 { q: "Cluster B includes: (Select all that apply.)", o: ["Antisocial", "Borderline", "Histrionic", "Narcissistic", "Avoidant"], a: [0, 1, 2, 3], s: true, r: "Correct: Antisocial, Borderline, Histrionic, Narcissistic. Avoidant is cluster C." },
 { q: "Antisocial personality disorder requires evidence of conduct disorder before age:", o: ["15", "5", "25", "40"], a: 0, r: "And the person must be at least 18." },
 { q: "A key feature of antisocial personality disorder is:", o: ["Lack of remorse", "Fear of abandonment", "Need for admiration", "Social anxiety"], a: 0, r: "Along with deceit and disregard for others." },

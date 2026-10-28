@@ -28,7 +28,7 @@ sections: [
 ]}
 ],
 questions: [
-{ q: "Cluster C personality disorders are described as:", o: ["Anxious or fearful", "Odd or eccentric", "Dramatic or erratic", "Psychotic"], a: 0, r: "\"Worried\" in the mnemonic." },
+{ q: "Cluster C personality disorders are described as:", o: ["Anxious or fearful", "Odd or eccentric", "Dramatic or erratic", "Psychotic"], a: 0, r: "Cluster C is \"Worried\" in the Weird–Wild–Worried mnemonic." },
 { q: "Cluster C includes: (Select all that apply.)", o: ["Avoidant", "Dependent", "Obsessive–compulsive", "Histrionic"], a: [0, 1, 2], s: true, r: "Correct: Avoidant, Dependent, Obsessive–compulsive. Histrionic is cluster B." },
 { q: "A client avoids social activities because of fear of criticism but wishes to have friends. This suggests:", o: ["Avoidant personality disorder", "Schizoid personality disorder", "Antisocial personality disorder", "Narcissistic personality disorder"], a: 0, r: "Schizoid clients lack desire for relationships." },
 { q: "Hypersensitivity to negative evaluation is a feature of:", o: ["Avoidant personality disorder", "Antisocial personality disorder", "Schizoid personality disorder", "Histrionic personality disorder"], a: 0, r: "Fear of rejection drives avoidance." },

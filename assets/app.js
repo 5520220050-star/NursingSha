@@ -17,6 +17,57 @@
       .replace(/__(.+?)__/g, "<i>$1</i>").replace(/(^|[^*])\*([^*\s][^*]*?)\*(?!\*)/g, "$1<i>$2</i>");
   }
   function arDiv(t) { return t ? '<div class="ar" lang="ar" dir="rtl">' + fmt(t) + "</div>" : ""; }
+  /* sentence splitting so Arabic can follow each English sentence */
+  var ABBR = /(?:^|[\s(])(?:e\.g|i\.e|vs|etc|Dr|Mr|Mrs|Ms|St|approx|No|Fig|cf|al|min|max|hr|wk|yr|mo|Jr|Sr)\.$/i;
+  function sentences(s, rtl) {
+    s = String(s || ""); var out = [], start = 0;
+    for (var i = 0; i < s.length; i++) {
+      var c = s[i];
+      if (c !== "." && c !== "!" && c !== "?" && c !== "؟") continue;
+      var j = i + 1;
+      while (j < s.length && /[.!?؟"'”)\]*]/.test(s[j])) j++;          // closing quotes/brackets/bold marks
+      if (j < s.length && !/\s/.test(s[j])) continue;                   // "0.6", "e.g.x"
+      var k = j; while (k < s.length && /\s/.test(s[k])) k++;
+      if (k >= s.length) break;
+      var head = s.slice(start, j);
+      if (c === "." && ABBR.test(head.replace(/[*"')\]]+$/, ""))) continue;
+      if (c === "." && /\b[A-Z]\.$/.test(head)) continue;               // initials
+      if (!rtl && /[a-z]/.test(s[k])) continue;                         // next starts lowercase → not a new sentence
+      out.push(head.trim()); start = k; i = k - 1;
+    }
+    var tail = s.slice(start).trim(); if (tail) out.push(tail);
+    return out;
+  }
+  function balanced(x) { return ((x.match(/\*\*/g) || []).length % 2 === 0) && ((x.match(/==/g) || []).length % 2 === 0); }
+  // English text with its Arabic placed sentence-by-sentence when the sentences line up; otherwise Arabic after the whole text
+  // merge consecutive items of the longer list into n groups so the groups' length shares best match the other language
+  function group(L, n, target) {
+    var tot = L.reduce(function (s, x) { return s + x.length; }, 0) || 1, ttot = target.reduce(function (s, x) { return s + x.length; }, 0) || 1;
+    var m = L.length, INF = 1e9, dp = [], prv = [], pre = [0];
+    for (var i = 0; i < m; i++) pre.push(pre[i] + L[i].length);
+    for (var g = 0; g <= n; g++) { dp.push([]); prv.push([]); for (var j = 0; j <= m; j++) { dp[g].push(INF); prv[g].push(-1); } }
+    dp[0][0] = 0;
+    for (g = 1; g <= n; g++) for (j = g; j <= m - (n - g); j++) for (var k = g - 1; k < j; k++) {
+      if (dp[g - 1][k] >= INF) continue;
+      var d = (pre[j] - pre[k]) / tot - target[g - 1].length / ttot, c = dp[g - 1][k] + d * d;
+      if (c < dp[g][j]) { dp[g][j] = c; prv[g][j] = k; }
+    }
+    var out = [], j2 = m; for (g = n; g >= 1; g--) { var k2 = prv[g][j2]; out.unshift(L.slice(k2, j2).join(" ")); j2 = k2; }
+    return out;
+  }
+  function pair(en, ar) {
+    if (!ar) return fmt(en);
+    var E = sentences(en), A = sentences(ar, true);
+    if (E.length > 1 && A.length > 1 && E.length !== A.length) { if (E.length > A.length) E = group(E, A.length, A); else A = group(A, E.length, E); }
+    if (E.length > 1 && E.length === A.length && E.every(balanced) && A.every(balanced))
+      return E.map(function (x, i) { return '<span class="en-s">' + fmt(x) + "</span> " + '<span class="ar ar-s" lang="ar" dir="rtl">' + fmt(A[i]) + "</span>"; }).join("");
+    return fmt(en) + arDiv(ar);
+  }
+  function lis(en, ar) {
+    var ok = ar && ar.length === en.length;
+    return en.map(function (x, i) { return "<li>" + (ok ? pair(x, ar[i]) : fmt(x)) + "</li>"; }).join("") ;
+  }
+  function arList(en, ar) { return ar && ar.length !== en.length ? '<div class="ar" lang="ar" dir="rtl"><ul class="bl">' + ar.map(function (x) { return "<li>" + fmt(x) + "</li>"; }).join("") + "</ul></div>" : ""; }
   function subj(id) { for (var i = 0; i < NS.subjects.length; i++) if (NS.subjects[i].id === id) return NS.subjects[i]; return null; }
   function sysOf(s, kind, sid) { var l = s[kind] || []; for (var i = 0; i < l.length; i++) if (l[i].id === sid) return l[i]; return null; }
   function man(sid, sys, tid) { return MAN[sid] && MAN[sid][sys] && MAN[sid][sys][tid] || null; }
@@ -177,17 +228,17 @@
   function rB(b) {
     switch (b.t) {
       case "h3": return '<div class="blk"><h3>' + fmt(b.en) + (b.ar ? '<span class="ar-h" lang="ar">' + esc(b.ar) + "</span>" : "") + "</h3></div>";
-      case "p": return '<div class="blk"><p>' + fmt(b.en) + "</p>" + arDiv(b.ar) + "</div>";
-      case "list": return '<div class="blk"><ul class="bl">' + b.en.map(function (x) { return "<li>" + fmt(x) + "</li>"; }).join("") + "</ul>" + (b.ar ? '<div class="ar" lang="ar" dir="rtl"><ul class="bl">' + b.ar.map(function (x) { return "<li>" + fmt(x) + "</li>"; }).join("") + "</ul></div>" : "") + "</div>";
-      case "table": return '<div class="blk">' + tbl(b.h, b.r) + (b.ar ? '<div class="ar" lang="ar" dir="rtl" style="padding:6px">' + tbl(b.ar.h, b.ar.r) + "</div>" : "") + "</div>";
+      case "p": return '<div class="blk"><p>' + pair(b.en, b.ar) + "</p></div>";
+      case "list": return '<div class="blk"><ul class="bl">' + lis(b.en, b.ar) + "</ul>" + arList(b.en, b.ar) + "</div>";
+      case "table": return '<div class="blk">' + tbl(b.h, b.r, b.ar) + "</div>";
       case "cards": return '<div class="blk cards">' + b.items.map(function (c) { return '<div class="icard"><div class="ii">' + icon(c.i) + '</div><div class="t">' + fmt(c.en) + "</div>" + (c.d ? '<div class="d">' + fmt(c.d) + "</div>" : "") + arDiv(c.ar) + "</div>"; }).join("") + "</div>";
-      case "tip": return '<div class="blk callout tip"><div class="lbl">Exam tip · نصيحة امتحانية</div><div>' + fmt(b.en) + "</div>" + arDiv(b.ar) + "</div>";
-      case "warn": return '<div class="blk callout warn"><div class="lbl">Danger sign · علامة خطر</div><div>' + fmt(b.en) + "</div>" + arDiv(b.ar) + "</div>";
-      case "mnem": return '<div class="blk mnem"><div class="hd"><span class="key">' + esc(b.k) + "</span>" + (b.title ? "<small>" + (typeof b.title === "object" ? esc(b.title.en || "") + (b.title.ar ? ' · <span lang="ar">' + esc(b.title.ar) + "</span>" : "") : esc(b.title)) + "</small>" : "") + "</div>" + b.rows.map(function (r) { return '<div class="row2"><b>' + esc(r[0]) + "</b><div>" + fmt(r[1]) + arDiv(r[2]) + "</div></div>"; }).join("") + "</div>";
-      case "flow": return '<div class="blk flow">' + b.steps.map(function (s, i) { return (i ? '<div class="arr">' + DOWN + "</div>" : "") + '<div class="st">' + fmt(s.en) + arDiv(s.ar) + "</div>"; }).join("") + "</div>";
-      case "cycle": return '<div class="blk cycle-wrap">' + cyc(b.steps.length, b.center) + '<ol class="cyc">' + b.steps.map(function (s) { return "<li>" + fmt(s.en) + arDiv(s.ar) + "</li>"; }).join("") + "</ol></div>";
+      case "tip": return '<div class="blk callout tip"><div class="lbl">Exam tip · نصيحة امتحانية</div><div>' + pair(b.en, b.ar) + "</div></div>";
+      case "warn": return '<div class="blk callout warn"><div class="lbl">Danger sign · علامة خطر</div><div>' + pair(b.en, b.ar) + "</div></div>";
+      case "mnem": return '<div class="blk mnem"><div class="hd"><span class="key">' + esc(b.k) + "</span>" + (b.title ? "<small>" + (typeof b.title === "object" ? esc(b.title.en || "") + (b.title.ar ? ' · <span lang="ar">' + esc(b.title.ar) + "</span>" : "") : esc(b.title)) + "</small>" : "") + "</div>" + b.rows.map(function (r) { return '<div class="row2"><b>' + esc(r[0]) + "</b><div>" + pair(r[1], r[2]) + "</div></div>"; }).join("") + "</div>";
+      case "flow": return '<div class="blk flow">' + b.steps.map(function (s, i) { return (i ? '<div class="arr">' + DOWN + "</div>" : "") + '<div class="st">' + pair(s.en, s.ar) + "</div>"; }).join("") + "</div>";
+      case "cycle": return '<div class="blk cycle-wrap">' + cyc(b.steps.length, b.center) + '<ol class="cyc">' + b.steps.map(function (s) { return "<li>" + pair(s.en, s.ar) + "</li>"; }).join("") + "</ol></div>";
       case "compare": return '<div class="blk compare" style="--n:' + b.cols.length + '">' + b.cols.map(function (c) {
-        return '<div class="col"><h4>' + fmt(c.h.en) + (c.h.ar ? '<span class="ar-h" lang="ar">' + esc(c.h.ar) + "</span>" : "") + '</h4><div class="in"><ul class="bl">' + c.en.map(function (x) { return "<li>" + fmt(x) + "</li>"; }).join("") + "</ul>" + (c.ar ? '<div class="ar" lang="ar" dir="rtl"><ul class="bl">' + c.ar.map(function (x) { return "<li>" + fmt(x) + "</li>"; }).join("") + "</ul></div>" : "") + "</div></div>";
+        return '<div class="col"><h4>' + fmt(c.h.en) + (c.h.ar ? '<span class="ar-h" lang="ar">' + esc(c.h.ar) + "</span>" : "") + '</h4><div class="in"><ul class="bl">' + lis(c.en, c.ar) + "</ul>" + arList(c.en, c.ar) + "</div></div>";
       }).join("") + "</div>";
       case "svg": return '<figure class="blk fig">' + b.svg + (b.en ? "<figcaption>" + fmt(b.en) + (b.ar ? '<span class="ar" lang="ar" dir="rtl" style="text-align:center">' + esc(b.ar) + "</span>" : "") + "</figcaption>" : "") + "</figure>";
       case "img": return photo(b);
@@ -239,9 +290,13 @@
     var cr = '<span class="credit">Image: <a href="' + esc(b.u) + '" target="_blank" rel="noopener">' + esc(b.by || "Wikimedia Commons") + "</a>" + (b.lic ? " · " + esc(b.lic) : "") + ' · <a href="' + esc(b.u) + '" target="_blank" rel="noopener">source</a></span>';
     return '<figure class="blk photo"><a class="ph-link" href="' + esc(b.full || b.src) + '" target="_blank" rel="noopener"><img loading="lazy" decoding="async" src="' + esc(b.src) + '"' + (b.w ? ' width="' + b.w + '" height="' + b.h + '"' : "") + ' alt="' + esc((b.en || "").replace(/\*\*/g, "")) + '" onerror="this.closest(\'figure\').style.display=\'none\'"></a><figcaption>' + cap + cr + "</figcaption></figure>";
   }
-  function tbl(hd, rows) {
-    return '<div class="tbl-wrap"><table' + (hd.length >= 3 ? ' class="wide"' : "") + "><thead><tr>" + hd.map(function (x) { return "<th>" + fmt(x) + "</th>"; }).join("") + "</tr></thead><tbody>" +
-      rows.map(function (r) { return "<tr>" + r.map(function (x, i) { return '<td data-l="' + esc(String(hd[i] || "").replace(/\*\*/g, "")) + '">' + fmt(x) + "</td>"; }).join("") + "</tr>"; }).join("") + "</tbody></table></div>";
+  function tbl(hd, rows, ar) {
+    var ah = ar && ar.h && ar.h.length === hd.length ? ar.h : null, ar_ = ar && ar.r && ar.r.length === rows.length ? ar.r : null;
+    function cell(x, a) { return a ? pair(x, a) : fmt(x); }
+    var h = '<div class="tbl-wrap"><table' + (hd.length >= 3 ? ' class="wide"' : "") + "><thead><tr>" + hd.map(function (x, i) { return "<th>" + fmt(x) + (ah ? '<span class="ar ar-s" lang="ar" dir="rtl">' + fmt(ah[i]) + "</span>" : "") + "</th>"; }).join("") + "</tr></thead><tbody>" +
+      rows.map(function (r, ri) { var a = ar_ && ar_[ri] && ar_[ri].length === r.length ? ar_[ri] : null; return "<tr>" + r.map(function (x, i) { return '<td data-l="' + esc(String(hd[i] || "").replace(/\*\*/g, "")) + '">' + cell(x, a && a[i]) + "</td>"; }).join("") + "</tr>"; }).join("") + "</tbody></table></div>";
+    if (ar && (!ah || !ar_ || ar_.some(function (r, i) { return r.length !== rows[i].length; }))) h += '<div class="ar" lang="ar" dir="rtl" style="padding:6px">' + tbl(ar.h, ar.r) + "</div>";
+    return h;
   }
   function cyc(n, center) {
     var R = 95, c = 130, o = '<svg class="cycle-svg" viewBox="0 0 260 260" role="img" aria-label="cycle diagram"><circle class="ring" cx="130" cy="130" r="' + R + '"/>';
@@ -284,7 +339,7 @@
   function lecture(pane, d, url, sy, idx, base) {
     var h = '<div class="article">';
     if (d.sections.length > 2) h += '<details class="toc"><summary>Contents · المحتويات (' + d.sections.length + ")</summary><ol>" + d.sections.map(function (sec, i) { return '<li><a href="javascript:void 0" data-jump="sec-' + i + '">' + esc(sec.h.en) + "</a></li>"; }).join("") + "</ol></details>";
-    if (d.intro) h += '<div class="intro">' + fmt(d.intro.en) + arDiv(d.intro.ar) + "</div>";
+    if (d.intro) h += '<div class="intro">' + pair(d.intro.en, d.intro.ar) + "</div>";
     var imgs = (NS.img && NS.img[d.key]) || [];
     d.sections.forEach(function (sec, i) {
       var blocks = sec.b.filter(function (b) { return !(imgs.length && b.t === "svg"); }).slice();

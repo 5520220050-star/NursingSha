@@ -295,3 +295,8 @@ ol.cyc .ar { padding: 3px 8px; margin-top: 3px; }
 .photo .ph-wait { height: 220px; background: linear-gradient(90deg, var(--line) 0%, var(--surface) 50%, var(--line) 100%); background-size: 200% 100%; animation: shimmer 1.4s linear infinite; }
 @keyframes shimmer { to { background-position: -200% 0; } }
 @media (prefers-reduced-motion: reduce) { .photo .ph-wait { animation: none; } }
+/* sentence-by-sentence Arabic */
+.ar.ar-s { padding: 4px 10px; margin: 4px 0 8px; font-size: .96em; }
+th .ar.ar-s { font-weight: 500; margin: 3px 0 0; padding: 2px 6px; }
+td .ar { padding: 3px 8px; margin-top: 4px; }
+li > .ar { margin-bottom: 4px; }
